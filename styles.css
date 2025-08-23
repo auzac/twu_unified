@@ -1,27 +1,4 @@
-/* Import the Inter font from Google Fonts for a modern, clean look */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
-
-/* Apply base styling to the body */
 body {
-    /* Set the font family to Inter, with a fallback to sans-serif */
-    font-family: 'Inter', sans-serif;
-    /* Define the background color for the entire page */
-    background-color: #f7fafc;
-}
-
-/* Style the hero section using a background image and properties */
-.hero-section {
-    /* Use a placeholder image that looks similar to the original design. This can be replaced. */
-    background-image: url('https://placehold.co/1200x800/d1e9f7/186a8a?text=Kids+Learning');
-    /* Ensure the image covers the entire container */
-    background-size: cover;
-    /* Center the background image */
-    background-position: center;
-    /* Prevent the image from repeating */
-    background-repeat: no-repeat;
-}
-
-/* Add a custom text shadow to improve readability of text over the image */
-.text-shadow-custom {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-family: 'Rubik', sans-serif;
+    background-color: #f0f9ff;
 }
