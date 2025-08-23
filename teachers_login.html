@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKPHT - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        
+        /* Login card container */
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 90%;
+            max-width: 400px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Header section */
+        .login-header {
+            background: #4a5568;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .school-logo {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .login-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .login-header p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        /* Form section */
+        .login-form {
+            padding: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        /* Alert messages */
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-error {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+        
+        .alert-success {
+            background: #c6f6d5;
+            color: #2d703e;
+            border: 1px solid #9ae6b4;
+        }
+        
+        /* Buttons */
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn-login:hover {
+            background: #5a67d8;
+        }
+        
+        /* Footer */
+        .login-footer {
+            text-align: center;
+            padding: 15px 25px 25px;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+        
+        .login-footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .login-card {
+                width: 95%;
+            }
+            
+            .login-header {
+                padding: 20px;
+            }
+            
+            .login-form {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="login-header">
+            <div class="school-logo">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h2>SKPHT Teachers Portal</h2>
+            <p>Sign in to access your dashboard</p>
+        </div>
+        
+        <div class="login-form">
+            <div id="errorAlert" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i> Invalid username or password
+            </div>
+            
+            <div id="successAlert" class="alert alert-success">
+                <i class="fas fa-check-circle"></i> Login successful! Redirecting...
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="username" class="form-control" placeholder="Enter your username">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" class="form-control" placeholder="Enter your password">
+                </div>
+            </div>
+            
+            <button id="loginBtn" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+        </div>
+        
+        <div class="login-footer">
+            <p>Demo login: username: <strong>admin</strong> / password: <strong>password123</strong></p>
+            <p><a href="#">Forgot your password?</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginBtn = document.getElementById('loginBtn');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const errorAlert = document.getElementById('errorAlert');
+            const successAlert = document.getElementById('successAlert');
+            const loginCard = document.querySelector('.login-card');
+            
+            // Demo credentials (in a real application, this would be server-side)
+            const validUsername = 'admin';
+            const validPassword = 'password123';
+            
+            loginBtn.addEventListener('click', function() {
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                // Hide alerts
+                errorAlert.style.display = 'none';
+                successAlert.style.display = 'none';
+                
+                // Simple validation
+                if (!username || !password) {
+                    showError('Please enter both username and password');
+                    return;
+                }
+                
+                // Check credentials
+                if (username === validUsername && password === validPassword) {
+                    showSuccess();
+                    
+                    // Simulate redirect to dashboard
+                    setTimeout(function() {
+                        window.location.href = 'teachers_dashboard.html';
+                    }, 1500);
+                } else {
+                    showError('Invalid username or password. Try: admin/password123');
+                }
+            });
+            
+            function showError(message) {
+                errorAlert.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+                errorAlert.style.display = 'block';
+                loginCard.classList.add('shake');
+                setTimeout(() => loginCard.classList.remove('shake'), 500);
+            }
+            
+            function showSuccess() {
+                successAlert.style.display = 'block';
+            }
+            
+            // Allow form submission with Enter key
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loginBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
