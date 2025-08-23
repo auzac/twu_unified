@@ -1,140 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKPHT Teachers</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Use Rubik font for a clean, modern look -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Rubik', sans-serif;
-            background-color: #f0f9ff;
-        }
-        .text-shadow-custom {
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SKPHT Teachers</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Rubik', sans-serif; }
+  </style>
 </head>
 <body class="flex bg-gray-100 min-h-screen">
 
-    <!-- Left Sidebar -->
-    <div class="bg-gray-800 text-white w-64 p-6 space-y-6 flex-shrink-0">
-        <!-- Logo and Title -->
-        <div class="flex items-center space-x-2">
-            <!-- Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-blue-400">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12M12 6l-3 3M12 6l3 3M12 18l-3-3M12 18l3-3M18 10h6M18 10l-3 3M18 10l-3-3M6 10H0M6 10l3 3M6 10l3-3"></path>
-            </svg>
-            <span class="text-2xl font-bold">SKPHT</span>
-        </div>
-
-        <!-- Navigation Menu -->
-        <nav class="space-y-2">
-            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l-7 7m7-7v10a1 1 0 01-1 1h-3"></path>
-                </svg>
-                <span>Dashboard</span>
-            </a>
-            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-10a2 2 0 01-2-2V7.75a2 2 0 012-2h10a2 2 0 012 2v10.5a2 2 0 01-2 2z" />
-                </svg>
-                <span>Organization</span>
-            </a>
-            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg bg-gray-900 transition-colors duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span>Teachers</span>
-            </a>
-            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15a3 3 0 110-6 3 3 0 010 6z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 10.5l-3-3m-3-3l-3 3m-3-3l-3 3M4.5 10.5l3-3m3-3l3 3m3-3l3 3m-3-3l-3-3"></path>
-                </svg>
-                <span>Payroll</span>
-            </a>
-            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v4M12 14c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
-                </svg>
-                <span>Profile</span>
-            </a>
-        </nav>
+  <!-- Sidebar -->
+  <aside class="bg-gray-800 text-white w-64 p-6 space-y-6 hidden md:block">
+    <div class="flex items-center space-x-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12M12 6l-3 3M12 6l3 3" />
+      </svg>
+      <span class="text-2xl font-bold">SKPHT</span>
     </div>
 
-    <!-- Main Content Area -->
-    <div class="flex-grow p-6">
-        <!-- Content Header -->
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="text-3xl font-semibold text-gray-800">Teachers (15)</h1>
-            <div class="flex space-x-2">
-                <button class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors duration-200">Import Teachers</button>
-                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">Add New Teacher</button>
-            </div>
-        </div>
+    <nav class="space-y-2">
+      <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700">
+        <span>🏠</span><span>Dashboard</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700">
+        <span>📂</span><span>Organization</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 p-2 rounded-lg bg-gray-900 border-l-4 border-blue-400">
+        <span>👩‍🏫</span><span>Teachers</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700">
+        <span>💰</span><span>Payroll</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700">
+        <span>👤</span><span>Profile</span>
+      </a>
+    </nav>
+  </aside>
 
-        <!-- Search and Filter Section -->
-        <div class="flex items-center justify-between mb-6">
-            <div class="relative w-full max-w-sm">
-                <input type="text" placeholder="Search" class="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </div>
-            <button class="flex items-center px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300 transition-colors duration-200 ml-4">
-                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.21a1 1 0 01-.29.71l-5.71 5.71V19a1 1 0 01-1 1h-4a1 1 0 01-1-1v-5.388L3.29 7.92a1 1 0 01-.29-.71V4z"></path>
-                </svg>
-                Filters
-            </button>
-        </div>
-
-        <!-- Teachers Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Teacher Card (Example) -->
-            <div class="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4">
-                <img src="https://placehold.co/80x80/285E61/FFFFFF?text=P" alt="Profile Picture" class="h-16 w-16 rounded-full object-cover">
-                <div class="flex-grow">
-                    <h3 class="font-bold text-lg">Puan Maryam</h3>
-                    <p class="text-sm text-gray-500">English Teacher</p>
-                    <div class="mt-2 text-sm text-gray-700">
-                        <p>ID: 01102021-7437</p>
-                        <p>Joined: 03-Jan-2022</p>
-                    </div>
-                </div>
-            </div>
-            <!-- More Teacher Cards would go here -->
-            <div class="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4">
-                <img src="https://placehold.co/80x80/6B46C1/FFFFFF?text=E" alt="Profile Picture" class="h-16 w-16 rounded-full object-cover">
-                <div class="flex-grow">
-                    <h3 class="font-bold text-lg">Encik Razi</h3>
-                    <p class="text-sm text-gray-500">Science Teacher</p>
-                    <div class="mt-2 text-sm text-gray-700">
-                        <p>ID: 01102021-7438</p>
-                        <p>Joined: 04-Feb-2022</p>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4">
-                <img src="https://placehold.co/80x80/A0AEC0/FFFFFF?text=C" alt="Profile Picture" class="h-16 w-16 rounded-full object-cover">
-                <div class="flex-grow">
-                    <h3 class="font-bold text-lg">Cikgu Ain</h3>
-                    <p class="text-sm text-gray-500">Math Teacher</p>
-                    <div class="mt-2 text-sm text-gray-700">
-                        <p>ID: 01102021-7439</p>
-                        <p>Joined: 15-Mar-2022</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- Main Content -->
+  <main class="flex-grow p-6">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-3xl font-bold text-gray-800">Teachers <span class="text-gray-500 text-lg">(15)</span></h1>
+      <div class="flex space-x-2">
+        <button class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600">Import</button>
+        <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">+ Add</button>
+      </div>
     </div>
+
+    <!-- Search + Filter -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="relative w-full max-w-sm">
+        <input type="text" placeholder="Search teacher..." class="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+      <button class="ml-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 flex items-center">
+        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M4 8h16M6 12h12M8 16h8"/>
+        </svg>
+        Filters
+      </button>
+    </div>
+
+    <!-- Teacher Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- Example Card -->
+      <div class="bg-white rounded-xl shadow-md p-6 flex items-center space-x-4 hover:-translate-y-1 hover:shadow-lg transition">
+        <img src="https://placehold.co/90x90/3B82F6/FFF?text=PM" alt="Puan Maryam" class="h-20 w-20 rounded-full object-cover">
+        <div>
+          <h3 class="font-bold text-lg">Puan Maryam</h3>
+          <p class="text-sm text-gray-500">English Teacher</p>
+          <p class="text-xs text-gray-400 mt-2">ID: 01102021-7437</p>
+          <p class="text-xs text-gray-400">Joined: 03-Jan-2022</p>
+        </div>
+      </div>
+
+      <!-- More Cards -->
+      <div class="bg-white rounded-xl shadow-md p-6 flex items-center space-x-4 hover:-translate-y-1 hover:shadow-lg transition">
+        <img src="https://placehold.co/90x90/8B5CF6/FFF?text=ER" alt="Encik Razi" class="h-20 w-20 rounded-full object-cover">
+        <div>
+          <h3 class="font-bold text-lg">Encik Razi</h3>
+          <p class="text-sm text-gray-500">Science Teacher</p>
+          <p class="text-xs text-gray-400 mt-2">ID: 01102021-7438</p>
+          <p class="text-xs text-gray-400">Joined: 04-Feb-2022</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md p-6 flex items-center space-x-4 hover:-translate-y-1 hover:shadow-lg transition">
+        <img src="https://placehold.co/90x90/F59E0B/FFF?text=CA" alt="Cikgu Ain" class="h-20 w-20 rounded-full object-cover">
+        <div>
+          <h3 class="font-bold text-lg">Cikgu Ain</h3>
+          <p class="text-sm text-gray-500">Math Teacher</p>
+          <p class="text-xs text-gray-400 mt-2">ID: 01102021-7439</p>
+          <p class="text-xs text-gray-400">Joined: 15-Mar-2022</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
 </body>
 </html>
