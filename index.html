@@ -3,80 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiddos - Learning Center</title>
+    <title>SKPHT Home</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Link to external CSS file will go here -->
-    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <!-- Use Rubik font for a clean, modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <style>
-        /* Use Inter font for a clean, modern look */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f9ff; /* A very light pastel blue background */
-        }
-        .hero-section {
-            background-image: url('header.jpg'); /* New background image named header.jpg */
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        .text-shadow-custom {
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Softer text shadow for pastel background */
+            font-family: 'Rubik', sans-serif;
+            background-color: #f0f9ff;
         }
     </style>
 </head>
-<body class="bg-sky-50">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
     <!-- Main Navigation Bar -->
     <header class="bg-white shadow-md">
         <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
             <!-- Logo -->
             <div class="text-2xl font-bold text-gray-800">
-                Kiddos
+                SKPHT
             </div>
             <!-- Navigation Links -->
             <div class="space-x-4">
-                <button class="px-4 py-2 text-gray-800 bg-blue-300 rounded-lg hover:bg-blue-400 transition-colors duration-300">Parents</button>
-                <button class="px-4 py-2 text-gray-800 bg-green-300 rounded-lg hover:bg-green-400 transition-colors duration-300">Teachers</button>
+                <a href="parents_dashboard.html" class="px-4 py-2 text-gray-800 bg-blue-300 rounded-lg hover:bg-blue-400 transition-colors duration-300">Parents</a>
+                <a href="teachers_dashboard.html" class="px-4 py-2 text-gray-800 bg-green-300 rounded-lg hover:bg-green-400 transition-colors duration-300">Teachers</a>
             </div>
         </nav>
     </header>
 
-    <!-- Hero Section -->
-    <div class="hero-section relative min-h-screen flex items-center justify-center text-center text-gray-800">
-        <div class="relative z-10 p-4">
-            <h1 class="text-3xl md:text-5xl font-extrabold text-shadow-custom leading-tight">
+    <!-- Main Content Area -->
+    <main class="flex-grow flex items-center justify-center text-center p-6">
+        <div class="w-full max-w-4xl">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-2">
                 SK Panglima Habibulah
             </h1>
-            <!-- Two-Column Content Block moved inside the hero section for central alignment -->
-            <div class="container mx-auto px-4 mt-8">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Column 1 - Parents -->
-                    <a href="#" class="block hover:shadow-xl transition-shadow duration-300">
-                        <div class="bg-blue-300 text-gray-800 p-6 rounded-lg shadow-lg flex flex-col items-center text-center">
-                            <!-- Icon for Parents -->
-                            <svg class="w-12 h-12 mb-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C9.24 2 7 4.24 7 7c0 2.21 1.79 4 4 4h2c2.21 0 4-1.79 4-4 0-2.76-2.24-5-5-5zm-5 11c-2.76 0-5 2.24-5 5v2h14v-2c0-2.76-2.24-5-5-5H7zm-3 5c0-1.65 1.35-3 3-3h10c1.65 0 3 1.35 3 3v2H4v-2z"></path>
-                            </svg>
-                            <h3 class="text-xl font-bold mb-2">Parents</h3>
-                            <p class="text-sm opacity-90">Find resources, activities, and support to help your child learn and grow.</p>
-                        </div>
-                    </a>
-                    <!-- Column 2 - Teachers -->
-                    <a href="#" class="block hover:shadow-xl transition-shadow duration-300">
-                        <div class="bg-green-300 text-gray-800 p-6 rounded-lg shadow-lg flex flex-col items-center text-center">
-                            <!-- Icon for Teachers -->
-                            <svg class="w-12 h-12 mb-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-2 2c-2.76 0-5 2.24-5 5v2h10v-2c0-2.76-2.24-5-5-5zM17.5 10c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM17.5 12c-2.76 0-5 2.24-5 5v2h10v-2c0-2.76-2.24-5-5-5z"></path>
-                            </svg>
-                            <h3 class="text-xl font-bold mb-2">Teachers</h3>
-                            <p class="text-sm opacity-90">Access lesson plans, teaching tools, and professional development materials.</p>
-                        </div>
-                    </a>
-                </div>
+            <p class="text-lg text-gray-600 mb-8">
+                Tawau, Sabah
+            </p>
+
+            <!-- Two-Column Content Block -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Column 1 - Parents -->
+                <a href="parents_dashboard.html" class="block hover:shadow-xl transition-shadow duration-300">
+                    <div class="bg-white text-gray-800 p-8 rounded-lg shadow-lg flex flex-col items-center text-center hover:bg-blue-50 transition-colors">
+                        <!-- Icon for Parents -->
+                        <svg class="w-16 h-16 mb-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C9.24 2 7 4.24 7 7c0 2.21 1.79 4 4 4h2c2.21 0 4-1.79 4-4 0-2.76-2.24-5-5-5zm-5 11c-2.76 0-5 2.24-5 5v2h14v-2c0-2.76-2.24-5-5-5H7zm-3 5c0-1.65 1.35-3 3-3h10c1.65 0 3 1.35 3 3v2H4v-2z"></path>
+                        </svg>
+                        <h3 class="text-2xl font-bold mb-2">Parents</h3>
+                        <p class="text-sm text-gray-600">Find resources, activities, and support to help your child learn and grow.</p>
+                    </div>
+                </a>
+                <!-- Column 2 - Teachers -->
+                <a href="teachers_dashboard.html" class="block hover:shadow-xl transition-shadow duration-300">
+                    <div class="bg-white text-gray-800 p-8 rounded-lg shadow-lg flex flex-col items-center text-center hover:bg-green-50 transition-colors">
+                        <!-- Icon for Teachers -->
+                        <svg class="w-16 h-16 mb-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-2 2c-2.76 0-5 2.24-5 5v2h10v-2c0-2.76-2.24-5-5-5zM17.5 10c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM17.5 12c-2.76 0-5 2.24-5 5v2h10v-2c0-2.76-2.24-5-5-5z"></path>
+                        </svg>
+                        <h3 class="text-2xl font-bold mb-2">Teachers</h3>
+                        <p class="text-sm text-gray-600">Access lesson plans, teaching tools, and professional development materials.</p>
+                    </div>
+                </a>
             </div>
         </div>
-    </div>
+    </main>
+
 </body>
 </html>
