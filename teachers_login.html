@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login to Your Account</title>
+    <!-- Objective: Use Supabase for authentication. No UI changes are required. -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -104,112 +105,46 @@
         </button>
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- JavaScript for Supabase Authentication will go here -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        
-        // IMPORTANT: Your Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyBMHMRW48Y-kpIxYoSInUjmFwiJMBbscsY",
-            authDomain: "skpht-f1739.firebaseapp.com",
-            projectId: "skpht-f1739",
-            storageBucket: "skpht-f1739.firebasestorage.app",
-            messagingSenderId: "378324743644",
-            appId: "1:378324743644:web:f33c9614f2e03d65b54b19",
-            measurementId: "G-NKSJ2G26FY"
-        };
+        import { createClient } from '@supabase/supabase-js'
+        const supabaseUrl = 'https://qamvnsesyssxyohhowag.supabase.co'
+        const supabaseKey = process.env.SUPABASE_KEY
+        const supabase = createClient(supabaseUrl, supabaseKey)
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
-        const loginCard = document.getElementById('login-card');
+        const googleSignInBtn = document.getElementById('google-signin-btn');
         const alertContainer = document.getElementById('alertContainer');
-        const googleSigninBtn = document.getElementById('google-signin-btn');
-        const passcodeInput = document.getElementById('passcode-input');
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const requiredPasscode = "XBA3048";
-
-        const showAlert = (message, type) => {
-            alertContainer.className = `p-4 mb-4 text-sm rounded-lg text-left ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
-            const icon = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
-            alertContainer.innerHTML = `<i class="${icon} mr-2"></i> ${message}`;
-            alertContainer.classList.remove('hidden');
-        };
-
-        // Function to reset authentication state
-        const resetAuthState = async () => {
-            try {
-                loadingOverlay.classList.remove('hidden');
-                // Sign out any existing user
-                await signOut(auth);
-                console.log("User signed out successfully");
-            } catch (error) {
-                console.error("Error signing out:", error);
-            } finally {
-                loadingOverlay.classList.add('hidden');
-            }
-        };
-
-        // Reset authentication state when page loads
-        window.addEventListener('load', async () => {
-            await resetAuthState();
-        });
-
-        // Event listener for the passcode input field
-        passcodeInput.addEventListener('input', () => {
-            // Check if the entered passcode matches the required one
-            if (passcodeInput.value.trim() === requiredPasscode) {
-                googleSigninBtn.disabled = false;
-            } else {
-                googleSigninBtn.disabled = true;
-            }
-        });
-
-        // Handle Google sign-in button click
-        googleSigninBtn.addEventListener('click', async () => {
-            try {
-                // Show loading state
-                googleSigninBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i> Signing in...';
-                googleSigninBtn.disabled = true;
-
-                await signInWithPopup(auth, provider);
-
-            } catch (error) {
-                // Handle a specific error case for unauthorized domains 
-                if (error.code === 'auth/unauthorized-domain') {
-                    const origin = window.location.origin;
-                    showAlert(`Sign-in failed. Please go to your Firebase console, navigate to Authentication > Settings, and add this domain to the authorized domains list: <strong>${origin}</strong>`, 'error');
-                } else {
-                    console.error("Sign-in error: ", error);
-                    showAlert('Sign-in failed. Please try again.', 'error');
-                }
-                
-                loginCard.classList.add('shake');
-                
-                // Reset button state
-                googleSigninBtn.innerHTML = '<i class="fab fa-google mr-3"></i> Sign in with Google';
-                // Check passcode again to re-enable the button if it's correct
-                if (passcodeInput.value.trim() === requiredPasscode) {
-                    googleSigninBtn.disabled = false;
-                }
-            }
-        });
         
-        // Listen for authentication state changes to handle redirection
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in
-                showAlert('Login successful! Redirecting...', 'success');
-                // Use a short delay for the user to see the success message before redirecting
-                setTimeout(() => {
-                    // Redirect to the dashboard page
-                    window.location.href = 'teachers_dashboard.html';
-                }, 1500);
+        function showMessage(message, type) {
+            alertContainer.textContent = message;
+            alertContainer.className = `p-4 mb-4 text-sm rounded-lg ${type === 'error' ? 'text-red-800 bg-red-50' : 'text-green-800 bg-green-50'}`;
+            alertContainer.style.display = 'block';
+        }
+
+        async function handleGoogleSignIn(event) {
+            event.preventDefault();
+            
+            // Disable the button to prevent multiple clicks
+            googleSignInBtn.disabled = true;
+            
+            // Call the signInWithOAuth method for Google
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+            });
+
+            if (error) {
+                showMessage(`Error: ${error.message}`, 'error');
+                googleSignInBtn.disabled = false;
+            } else {
+                // The redirection happens automatically here
+                // No need for further action
             }
-        });
+        }
+
+        googleSignInBtn.addEventListener('click', handleGoogleSignIn);
+
+        // Enable the button once the script is loaded
+        googleSignInBtn.disabled = false;
     </script>
 </body>
 </html>
