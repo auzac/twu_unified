@@ -105,12 +105,15 @@
     </div>
 
 <script type="module">
-        import { createClient } from '@supabase/supabase-js'
-        const supabaseUrl = 'https://qamvnsesyssxyohhowag.supabase.co'
-        const supabaseKey = process.env.SUPABASE_KEY
-        const supabase = createClient(supabaseUrl, supabaseKey)
+    // Correctly import Supabase from a CDN URL
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
-    // All your existing login logic goes here
+    // Rest of your login logic
+    const supabaseUrl = 'https://qamvnsesyssxyohhowag.supabase.co';
+    const supabaseKey = 'sb_publishable_S-pthrKhle0K2tkTLgOYJw_u8Kenyg_'; // Replace with your actual key
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // All your other JavaScript code...
     const loginCard = document.getElementById('login-card');
     const alertContainer = document.getElementById('alertContainer');
     const googleSigninBtn = document.getElementById('google-signin-btn');
