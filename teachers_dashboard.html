@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Papan Pemuka Pengurusan Pelajar</title>
+    <!-- Use Tailwind CSS for a modern, responsive design -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS for unique styles not easily done with Tailwind -->
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -53,6 +56,7 @@
             font-weight: bold;
             color: white;
         }
+        /* Media query for mobile responsiveness, collapsing the sidebar */
         @media (max-width: 768px) {
             .sidebar {
                 width: 70px;
@@ -68,8 +72,9 @@
 </head>
 <body class="flex min-h-screen">
     <!-- Sidebar -->
-    <div class="sidebar flex flex-col justify-between py-6">
+    <div class="sidebar flex flex-col justify-between py-6 rounded-r-lg">
         <div>
+            <!-- Sidebar Header/Logo -->
             <div class="px-6 mb-8 flex items-center">
                 <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center mr-3">
                     <i class="fas fa-graduation-cap text-blue-600 text-xl"></i>
@@ -77,40 +82,42 @@
                 <h1 class="text-white font-bold text-xl sidebar-text">EduManage</h1>
             </div>
             
-            <div class="sidebar-item active" data-section="jadual">
+            <!-- Sidebar Navigation Items -->
+            <div class="sidebar-item active rounded-r-lg" data-section="jadual">
                 <i class="fas fa-calendar-alt w-5 mr-3 text-center"></i>
                 <span class="sidebar-text">Jadual</span>
             </div>
 
-            <div class="sidebar-item" data-section="daftar-murid">
+            <div class="sidebar-item rounded-r-lg" data-section="daftar-murid">
                 <i class="fas fa-user-plus w-5 mr-3 text-center"></i>
                 <span class="sidebar-text">Daftar Murid</span>
             </div>
             
-            <div class="sidebar-item" data-section="kehadiran">
+            <div class="sidebar-item rounded-r-lg" data-section="kehadiran">
                 <i class="fas fa-clipboard-check w-5 mr-3 text-center"></i>
                 <span class="sidebar-text">Kehadiran</span>
             </div>
             
-            <div class="sidebar-item" data-section="pemarkahan">
+            <div class="sidebar-item rounded-r-lg" data-section="pemarkahan">
                 <i class="fas fa-award w-5 mr-3 text-center"></i>
                 <span class="sidebar-text">Pemarkahan</span>
             </div>
             
-            <div class="sidebar-item" data-section="senarai-murid">
+            <div class="sidebar-item rounded-r-lg" data-section="senarai-murid">
                 <i class="fas fa-users w-5 mr-3 text-center"></i>
                 <span class="sidebar-text">Senarai Murid</span>
             </div>
 
-            <div class="sidebar-item" data-section="eksport">
+            <div class="sidebar-item rounded-r-lg" data-section="eksport">
                 <i class="fas fa-file-export w-5 mr-3 text-center"></i>
                 <span class="sidebar-text">Eksport CSV</span>
             </div>
         </div>
         
+        <!-- Logout Button -->
         <div class="px-6">
             <div class="pt-4 border-t border-blue-400">
-                <div class="sidebar-item" id="logout-button">
+                <div class="sidebar-item rounded-r-lg" id="logout-button">
                     <i class="fas fa-sign-out-alt w-5 mr-3 text-center"></i>
                     <span class="sidebar-text">Log Keluar</span>
                 </div>
@@ -121,7 +128,7 @@
     <!-- Main Content -->
     <div class="content-area">
         <!-- Header -->
-        <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center">
+        <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center rounded-bl-lg">
             <div>
                 <h2 class="text-2xl font-bold text-gray-800" id="section-title">Jadual</h2>
                 <p class="text-gray-500 text-sm" id="section-description">Urus jadual kelas dan acara</p>
@@ -292,25 +299,18 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, collection, onSnapshot, query, where, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // IMPORTANT: Your Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyBMHMRW48Y-kpIxYoSInUjmFwiJMBbscsY",
-            authDomain: "skpht-f1739.firebaseapp.com",
-            projectId: "skpht-f1739",
-            storageBucket: "skpht-f1739.firebaseapp.com",
-            messagingSenderId: "378324743644",
-            appId: "1:378324743644:web:f33c9614f2e03d65b54b19",
-            measurementId: "G-NKSJ2G26FY"
-        };
-        
-        // The *correct* class list provided by the user
+        // --- IMPORTANT: Use provided global variables for Firebase configuration ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // The correct class list provided by the user
         const classList = ["1 Amanah", "2 Bijak", "3 Cemerlang", "4 Dinamik", "5 Efektif", "6 Gemilang"];
         
         // The years available for selection
-        const startYear = 2023; // Can be adjusted as needed
+        const startYear = 2023;
         const currentYear = new Date().getFullYear();
         const yearList = [];
         for (let year = currentYear; year >= startYear; year--) {
@@ -318,11 +318,13 @@
         }
 
         let unsubscribeFromStudents = null; // Variable to hold the unsubscribe function for the listener
-        
+        let db, auth;
+
         document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize Firebase services outside of the auth check
             const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const db = getFirestore(app);
+            auth = getAuth(app);
+            db = getFirestore(app);
 
             // Authentication setup
             const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -349,7 +351,6 @@
             const classFilterElement = document.getElementById('classFilter');
 
             // --- Function to populate a select element with an array of options ---
-            // It now correctly handles the default "Semua" option without a separate "all" value.
             function populateDropdown(selectElement, options, allText = 'Pilih') {
                 selectElement.innerHTML = `<option value="">${allText}</option>`;
                 options.forEach(option => {
@@ -360,7 +361,7 @@
                 });
             }
 
-            // Populate the year and class dropdowns
+            // Populate the year and class dropdowns for both registration and filters
             populateDropdown(studentYearSelect, yearList);
             populateDropdown(yearFilterElement, yearList, 'Semua Tahun');
             populateDropdown(studentClassSelect, classList);
@@ -368,18 +369,24 @@
 
             // Set the current year as the default selected option for the registration form
             studentYearSelect.value = currentYear.toString();
-            // The filter dropdowns will now default to "Semua Tahun/Kelas" because their value is an empty string.
 
+            // Set up authentication state listener
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    userGreetingElement.textContent = `Hello, ${user.email}`;
+                    // Update UI with user info
+                    userGreetingElement.textContent = `Hello, ${user.email || 'Pengguna'}`;
                     userGreetingElement.classList.remove('hidden');
-                    userInitialElement.textContent = user.email.charAt(0).toUpperCase();
+                    userInitialElement.textContent = (user.email ? user.email.charAt(0) : 'P').toUpperCase();
 
                     // Initial listener setup with no filters (empty string values)
-                    setupStudentListListener(db, studentListElement, loadingStudentsElement, yearFilterElement.value, classFilterElement.value);
+                    // The Firestore listener is set up here after the user is authenticated
+                    setupStudentListListener(db, auth.currentUser.uid, studentListElement, loadingStudentsElement, yearFilterElement.value, classFilterElement.value);
                 } else {
                     console.log("User is not signed in.");
+                    // Hide user info if no user is signed in
+                    userGreetingElement.classList.add('hidden');
+                    userInitialElement.textContent = 'A';
+                    // Optional: Redirect to login page or show a login message
                 }
             });
 
@@ -387,6 +394,10 @@
                 logoutButton.addEventListener('click', async () => {
                     try {
                         await signOut(auth);
+                        // Hide user info and refresh the page or show a login view
+                        userGreetingElement.classList.add('hidden');
+                        userInitialElement.textContent = 'A';
+                        console.log("User signed out successfully.");
                     } catch (error) {
                         console.error("Logout error: ", error);
                     }
@@ -402,11 +413,11 @@
                     const studentGender = registrationForm.studentGender.value;
                     const studentYear = studentYearSelect.value;
                     const studentClass = studentClassSelect.value;
+                    const userId = auth.currentUser ? auth.currentUser.uid : 'anonymous';
                     
                     if (!studentYear || !studentClass) {
                         statusMessage.textContent = "Sila pilih Tahun dan Kelas.";
-                        statusMessage.classList.remove('hidden', 'bg-green-100', 'text-green-700');
-                        statusMessage.classList.add('bg-red-100', 'text-red-700');
+                        statusMessage.className = 'mt-4 p-4 text-sm rounded-lg bg-red-100 text-red-700';
                         return;
                     }
 
@@ -419,11 +430,12 @@
                     };
 
                     try {
-                        await setDoc(doc(db, "maklumat_murid", studentIdCard), studentData);
+                        // Store student data under the user's specific path
+                        const studentDocRef = doc(db, `/artifacts/${appId}/users/${userId}/students`, studentIdCard);
+                        await setDoc(studentDocRef, studentData);
 
                         statusMessage.textContent = "Pendaftaran murid berjaya!";
-                        statusMessage.classList.remove('hidden', 'bg-red-100', 'text-red-700');
-                        statusMessage.classList.add('bg-green-100', 'text-green-700');
+                        statusMessage.className = 'mt-4 p-4 text-sm rounded-lg bg-green-100 text-green-700';
                         
                         registrationForm.reset();
                         studentYearSelect.value = currentYear.toString(); // Reset year to current year
@@ -435,8 +447,7 @@
                     } catch (error) {
                         console.error("Error adding document: ", error);
                         statusMessage.textContent = "Ralat semasa mendaftarkan murid. Sila cuba lagi.";
-                        statusMessage.classList.remove('hidden', 'bg-green-100', 'text-green-700');
-                        statusMessage.classList.add('bg-red-100', 'text-red-700');
+                        statusMessage.className = 'mt-4 p-4 text-sm rounded-lg bg-red-100 text-red-700';
                     }
                 });
             }
@@ -446,47 +457,52 @@
             classFilterElement.addEventListener('change', updateStudentList);
             
             function updateStudentList() {
-                const selectedYear = yearFilterElement.value;
-                const selectedClass = classFilterElement.value;
+                // Only update if the user is authenticated
+                if (auth.currentUser) {
+                    const selectedYear = yearFilterElement.value;
+                    const selectedClass = classFilterElement.value;
+                    const userId = auth.currentUser.uid;
+                    // Unsubscribe the old listener before creating a new one
+                    if (unsubscribeFromStudents) {
+                        unsubscribeFromStudents();
+                    }
 
-                // Unsubscribe the old listener before creating a new one
-                if (unsubscribeFromStudents) {
-                    unsubscribeFromStudents();
+                    // Pass the new filter values to the listener setup function
+                    setupStudentListListener(db, userId, studentListElement, loadingStudentsElement, selectedYear, selectedClass);
+                } else {
+                    console.error("Cannot update student list: User not authenticated.");
                 }
-
-                // Pass the new filter values to the listener setup function
-                setupStudentListListener(db, studentListElement, loadingStudentsElement, selectedYear, selectedClass);
             }
 
-            function setupStudentListListener(db, listElement, loadingElement, yearFilter = '', classFilter = '') {
+            // Function to set up the Firestore listener for student data
+            function setupStudentListListener(dbInstance, userId, listElement, loadingElement, yearFilter = '', classFilter = '') {
                 let studentsQuery;
-                const studentsCol = collection(db, "maklumat_murid");
+                // Construct the secure Firestore collection path
+                const studentsCol = collection(dbInstance, `/artifacts/${appId}/users/${userId}/students`);
 
-                // --- FIX: The logic now checks for an empty string (`""`) which corresponds to the "Semua" option. ---
-                if (!yearFilter && !classFilter) {
-                    // Case 1: No filters selected ("Semua Tahun" and "Semua Kelas")
-                    studentsQuery = studentsCol;
-                } else if (!yearFilter) {
-                    // Case 2: Only class filter is selected
-                    studentsQuery = query(studentsCol, where("kelas", "==", classFilter));
-                } else if (!classFilter) {
-                    // Case 3: Only year filter is selected
-                    studentsQuery = query(studentsCol, where("tahun", "==", yearFilter));
-                } else {
-                    // Case 4: Both year and class filters are selected
+                // Create the query based on the selected filters
+                if (yearFilter && classFilter) {
                     studentsQuery = query(studentsCol, where("tahun", "==", yearFilter), where("kelas", "==", classFilter));
+                } else if (yearFilter) {
+                    studentsQuery = query(studentsCol, where("tahun", "==", yearFilter));
+                } else if (classFilter) {
+                    studentsQuery = query(studentsCol, where("kelas", "==", classFilter));
+                } else {
+                    // No filters, get all students
+                    studentsQuery = studentsCol;
                 }
 
                 listElement.innerHTML = '';
                 loadingElement.classList.remove('hidden');
 
+                // Start listening for real-time changes
                 unsubscribeFromStudents = onSnapshot(studentsQuery, (snapshot) => {
                     const students = snapshot.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data()
                     }));
                     
-                    listElement.innerHTML = '';
+                    listElement.innerHTML = ''; // Clear previous student cards
                     
                     if (students.length > 0) {
                         students.forEach(student => {
@@ -518,6 +534,7 @@
                 });
             }
 
+            // UI logic for switching between sections
             const sidebarItems = document.querySelectorAll('.sidebar-item');
             const sectionContents = document.querySelectorAll('.section-content');
             const sectionTitle = document.getElementById('section-title');
@@ -548,14 +565,9 @@
             sidebarItems.forEach(item => {
                 item.addEventListener('click', function() {
                     const sectionId = this.getAttribute('data-section');
-                    if (sectionId !== 'log-keluar') { switchSection(sectionId); }
-                });
-            });
-            
-            document.querySelectorAll('button[data-section]').forEach(button => {
-                button.addEventListener('click', function() {
-                    const sectionId = this.getAttribute('data-section');
-                    switchSection(sectionId);
+                    if (sectionId && sectionId !== 'log-keluar') { // Ensure a sectionId exists and it's not the logout button
+                        switchSection(sectionId);
+                    }
                 });
             });
 

@@ -101,7 +101,7 @@
         };
 
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig); 
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
@@ -159,6 +159,7 @@
         });
 
         // Listen for authentication state changes to handle redirection
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // User is signed in
@@ -170,6 +171,7 @@
                 }, 1500);
             }
         });
+
     </script>
 </body>
 </html>
