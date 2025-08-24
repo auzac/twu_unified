@@ -3,289 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKPHT - Login</title>
+    <title>Login to Your Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Reset and base styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            color: #333;
+            justify-content: center;
         }
-        
-        /* Login card container */
-        .login-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            width: 90%;
-            max-width: 400px;
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        /* Header section */
-        .login-header {
-            background: #4a5568;
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-        
-        .school-logo {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .login-header h2 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-        
-        .login-header p {
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-        
-        /* Form section */
-        .login-form {
-            padding: 25px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .input-with-icon {
-            position: relative;
-        }
-        
-        .input-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #a0aec0;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px 12px 40px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        
-        .form-control:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
-        
-        /* Alert messages */
-        .alert {
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        
-        .alert-error {
-            background: #fed7d7;
-            color: #c53030;
-            border: 1px solid #feb2b2;
-        }
-        
-        .alert-success {
-            background: #c6f6d5;
-            color: #2d703e;
-            border: 1px solid #9ae6b4;
-        }
-        
-        /* Buttons */
-        .btn-login {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-weight: 600;
-        }
-        
-        .btn-login:hover {
-            background: #5a67d8;
-        }
-        
-        /* Footer */
-        .login-footer {
-            text-align: center;
-            padding: 15px 25px 25px;
-            border-top: 1px solid #eee;
-            font-size: 0.9rem;
-            color: #718096;
-        }
-        
-        .login-footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        
-        .login-footer a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+            10%, 90% { transform: translateX(-1px); }
+            20%, 80% { transform: translateX(2px); }
+            30%, 50%, 70% { transform: translateX(-4px); }
+            40%, 60% { transform: translateX(4px); }
         }
-        
-        .shake {
-            animation: shake 0.5s;
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        .input-focus-effect:focus {
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
         }
-        
-        /* Responsive adjustments */
-        @media (max-width: 480px) {
-            .login-card {
-                width: 95%;
-            }
-            
-            .login-header {
-                padding: 20px;
-            }
-            
-            .login-form {
-                padding: 20px;
-            }
+        .login-container {
+            width: 100%;
+            max-width: 24rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .user-icon {
+            width: 6rem;
+            height: 6rem;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(to bottom right, #3b82f6, #2563eb);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+        }
+        .btn-login {
+            background: linear-gradient(to bottom right, #2563eb, #1d4ed8);
+            transition: all 0.3s ease;
+        }
+        .btn-login:hover {
+            background: linear-gradient(to bottom right, #1d4ed8, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.25);
+        }
+        .btn-cancel {
+            background: linear-gradient(to bottom right, #6b7280, #4b5563);
+            transition: all 0.3s ease;
+        }
+        .btn-cancel:hover {
+            background: linear-gradient(to bottom right, #4b5563, #374151);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(107, 114, 128, 0.2);
         }
     </style>
 </head>
-<body>
-    <div class="login-card">
-        <div class="login-header">
-            <div class="school-logo">
-                <i class="fas fa-graduation-cap"></i>
-            </div>
-            <h2>SKPHT Teachers Portal</h2>
-            <p>Sign in to access your dashboard</p>
+<body class="p-4">
+    <div class="login-container" id="login-card">
+        <!-- User Icon -->
+        <div class="user-icon">
+            <i class="fas fa-user text-white text-4xl"></i>
         </div>
+
+        <h1 class="text-2xl font-semibold text-gray-800 mb-2">Welcome Back</h1>
+        <p class="text-gray-600 mb-6">Sign in to continue to your account</p>
+
+        <!-- Alert Container -->
+        <div id="alertContainer" class="hidden p-4 mb-4 text-sm rounded-lg text-left" role="alert"></div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="space-y-4">
+            <div class="relative">
+                <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="schoolName" class="w-full p-3 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 input-focus-effect" placeholder="Username" aria-label="Username" required autocomplete="username">
+            </div>
+            
+            <div class="relative">
+                <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="password" id="password" class="w-full p-3 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 input-focus-effect" placeholder="Password" aria-label="Password" required autocomplete="current-password">
+            </div>
         
-        <div class="login-form">
-            <div id="errorAlert" class="alert alert-error">
-                <i class="fas fa-exclamation-circle"></i> Invalid username or password
+            <div class="flex justify-between items-center text-sm text-gray-600 mt-4">
+                <label class="inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600 rounded transition duration-150">
+                    <span class="ml-2 select-none">Remember me</span>
+                </label>
             </div>
-            
-            <div id="successAlert" class="alert alert-success">
-                <i class="fas fa-check-circle"></i> Login successful! Redirecting...
+
+            <div class="flex space-x-4 mt-6">
+                <button type="button" id="cancelBtn" class="btn-cancel flex-1 p-3 text-white rounded-lg font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
+                    CANCEL
+                </button>
+                <button id="loginBtn" type="submit" class="btn-login flex-1 p-3 text-white rounded-lg font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
+                    LOGIN
+                </button>
             </div>
-            
-            <div class="form-group">
-                <label for="username">Username</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-user input-icon"></i>
-                    <input type="text" id="username" class="form-control" placeholder="Enter your username">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Password</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="password" class="form-control" placeholder="Enter your password">
-                </div>
-            </div>
-            
-            <button id="loginBtn" class="btn-login">
-                <i class="fas fa-sign-in-alt"></i> Sign In
-            </button>
-        </div>
-        
+        </form>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginBtn = document.getElementById('loginBtn');
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
-            const errorAlert = document.getElementById('errorAlert');
-            const successAlert = document.getElementById('successAlert');
-            const loginCard = document.querySelector('.login-card');
+        const loginForm = document.getElementById('loginForm');
+        const schoolNameInput = document.getElementById('schoolName');
+        const passwordInput = document.getElementById('password');
+        const alertContainer = document.getElementById('alertContainer');
+        const loginCard = document.getElementById('login-card');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const validUsername = 'admin';
+        const validPassword = 'password123';
+        
+        const showAlert = (message, type) => {
+            alertContainer.className = `p-4 mb-4 text-sm rounded-lg text-left ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+            const icon = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+            alertContainer.innerHTML = `<i class="${icon} mr-2"></i> ${message}`;
+            alertContainer.classList.remove('hidden');
             
-            // Demo credentials (in a real application, this would be server-side)
-            const validUsername = 'admin';
-            const validPassword = 'password123';
+            // Auto-hide success message after 3 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertContainer.classList.add('hidden');
+                }, 3000);
+            }
+        };
+        
+        const handleLogin = (e) => {
+            if (e) e.preventDefault();
             
-            loginBtn.addEventListener('click', function() {
-                const username = usernameInput.value.trim();
-                const password = passwordInput.value.trim();
-                
-                // Hide alerts
-                errorAlert.style.display = 'none';
-                successAlert.style.display = 'none';
-                
-                // Simple validation
-                if (!username || !password) {
-                    showError('Please enter both username and password');
-                    return;
-                }
-                
-                // Check credentials
-                if (username === validUsername && password === validPassword) {
-                    showSuccess();
-                    
-                    // Simulate redirect to dashboard
-                    setTimeout(function() {
-                        window.location.href = 'teachers_dashboard.html';
-                    }, 1500);
+            const username = schoolNameInput.value.trim();
+            const password = passwordInput.value.trim();
+            alertContainer.classList.add('hidden');
+            loginCard.classList.remove('shake');
+            
+            // Form validation
+            if (!username || !password) {
+                showAlert('Please fill in all fields.', 'error');
+                if (!username) {
+                    schoolNameInput.focus();
                 } else {
-                    showError('Invalid username or password. Try: admin/password123');
+                    passwordInput.focus();
                 }
-            });
+                return;
+            }
             
-            function showError(message) {
-                errorAlert.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
-                errorAlert.style.display = 'block';
+            if (username === validUsername && password === validPassword) {
+                showAlert('Login successful! Redirecting...', 'success');
+                // Simulate successful login
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                loginBtn.disabled = true;
+                
+                // Simulate redirect after successful login
+                setTimeout(() => {
+                    window.location.href = 'teachers_dashboard.html';
+                }, 1500);
+            } else {
+                showAlert('Invalid username or password.', 'error');
                 loginCard.classList.add('shake');
-                setTimeout(() => loginCard.classList.remove('shake'), 500);
+                passwordInput.value = '';
+                passwordInput.focus();
             }
-            
-            function showSuccess() {
-                successAlert.style.display = 'block';
-            }
-            
-            // Allow form submission with Enter key
-            passwordInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    loginBtn.click();
-                }
-            });
+        };
+
+        // Handle cancel button click
+        const handleCancel = () => {
+            // Redirect to index.html
+            window.location.href = 'index.html';
+        };
+
+        loginForm.addEventListener('submit', handleLogin);
+        cancelBtn.addEventListener('click', handleCancel);
+        
+        // Add input event listeners to remove error state when typing
+        schoolNameInput.addEventListener('input', () => {
+            alertContainer.classList.add('hidden');
+            loginCard.classList.remove('shake');
+        });
+        
+        passwordInput.addEventListener('input', () => {
+            alertContainer.classList.add('hidden');
+            loginCard.classList.remove('shake');
+        });
+
+        // Set focus to username input on page load
+        window.addEventListener('load', () => {
+            schoolNameInput.focus();
         });
     </script>
 </body>
