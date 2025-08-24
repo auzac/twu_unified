@@ -157,7 +157,7 @@
             <div class="flex items-center">
                 <p id="user-greeting" class="text-gray-600 font-medium mr-4 hidden"></p>
                 <div class="relative mr-4">
-                    <input type="text" placeholder="Cari..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="text" id="search-input" placeholder="Cari..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
                 <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -295,35 +295,35 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <label class="flex items-center">
-                                <input type="checkbox" checked class="h-4 w-4 text-blue-600">
-                                <span class="ml-2 text-gray-700">ID Pelajar</span>
+                                <input type="checkbox" checked id="exportIdCard" class="h-4 w-4 text-blue-600">
+                                <span class="ml-2 text-gray-700">Kad Pengenalan</span>
                             </label>
                             <label class="flex items-center mt-2">
-                                <input type="checkbox" checked class="h-4 w-4 text-blue-600">
+                                <input type="checkbox" checked id="exportName" class="h-4 w-4 text-blue-600">
                                 <span class="ml-2 text-gray-700">Nama Penuh</span>
                             </label>
                             <label class="flex items-center mt-2">
-                                <input type="checkbox" checked class="h-4 w-4 text-blue-600">
-                                <span class="ml-2 text-gray-700">Alamat E-mel</span>
+                                <input type="checkbox" checked id="exportGender" class="h-4 w-4 text-blue-600">
+                                <span class="ml-2 text-gray-700">Jantina</span>
                             </label>
                         </div>
                         <div>
                             <label class="flex items-center">
-                                <input type="checkbox" checked class="h-4 w-4 text-blue-600">
+                                <input type="checkbox" checked id="exportYear" class="h-4 w-4 text-blue-600">
+                                <span class="ml-2 text-gray-700">Tahun</span>
+                            </label>
+                            <label class="flex items-center mt-2">
+                                <input type="checkbox" checked id="exportClass" class="h-4 w-4 text-blue-600">
                                 <span class="ml-2 text-gray-700">Kelas</span>
                             </label>
                             <label class="flex items-center mt-2">
-                                <input type="checkbox" checked class="h-4 w-4 text-blue-600">
-                                <span class="ml-2 text-gray-700">Jantina</span>
-                            </label>
-                            <label class="flex items-center mt-2">
-                                <input type="checkbox" class="h-4 w-4 text-blue-600">
+                                <input type="checkbox" id="exportTimestamp" class="h-4 w-4 text-blue-600">
                                 <span class="ml-2 text-gray-700">Tarikh Pendaftaran</span>
                             </label>
                         </div>
                     </div>
                     <div class="flex justify-end">
-                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center">
+                        <button id="export-button" class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center">
                             <i class="fas fa-file-export mr-2"></i> Eksport ke CSV
                         </button>
                     </div>
@@ -335,6 +335,8 @@
     <!-- Firebase SDKs -->
     <script type="module">
         // Firebase configuration - replace with your actual Firebase config
+        // NOTE: The Firebase configuration below will be automatically provided by the Canvas environment at runtime.
+        // It's included here for demonstration purposes, but the live app will use the provided globals.
         const firebaseConfig = {
             apiKey: "AIzaSyBMHMRW48Y-kpIxYoSInUjmFwiJMBbscsY",
             authDomain: "skpht-f1739.firebaseapp.com",
@@ -344,7 +346,13 @@
             appId: "1:378324743644:web:f33c9614f2e03d65b54b19",
             measurementId: "G-NKSJ2G26FY"
         };
-
+        
+        // --- Global Variables Provided by Canvas Environment ---
+        // These are automatically populated and should be used instead of the hardcoded config.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const config = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -360,13 +368,14 @@
         for (let year = currentYear; year >= startYear; year--) {
             yearList.push(year.toString());
         }
-
+        
         let unsubscribeFromStudents = null; // Variable to hold the unsubscribe function for the listener
         let db, auth;
+        let allStudents = []; // Store the full list of students for client-side filtering
 
         document.addEventListener('DOMContentLoaded', async function() {
             // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
+            const app = initializeApp(config);
             auth = getAuth(app);
             db = getFirestore(app);
 
@@ -383,18 +392,20 @@
             const classFilterElement = document.getElementById('classFilter');
             const firebaseErrorElement = document.getElementById('firebase-error');
             const tryAgainButton = document.getElementById('try-again-btn');
+            const searchInput = document.getElementById('search-input');
+            const exportButton = document.getElementById('export-button');
 
-            // Function to show Firebase error
+            // --- Function to show Firebase error ---
             function showFirebaseError() {
                 firebaseErrorElement.classList.remove('hidden');
             }
 
-            // Function to hide Firebase error
+            // --- Function to hide Firebase error ---
             function hideFirebaseError() {
                 firebaseErrorElement.classList.add('hidden');
             }
 
-            // Try again button handler
+            // --- Try again button handler ---
             tryAgainButton.addEventListener('click', function() {
                 hideFirebaseError();
                 if (auth.currentUser) {
@@ -421,27 +432,41 @@
 
             // Set the current year as the default selected option for the registration form
             studentYearSelect.value = currentYear.toString();
+            
+            // --- Authenticate user with custom token or anonymously ---
+            if (initialAuthToken) {
+                try {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                    console.log("Signed in with custom token.");
+                } catch (error) {
+                    console.error("Error signing in with custom token:", error);
+                    // Fallback to anonymous sign-in if custom token fails
+                    await signInAnonymously(auth);
+                }
+            } else {
+                await signInAnonymously(auth);
+            }
 
-            // Set up authentication state listener
+            // --- Set up authentication state listener ---
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     // Update UI with user info
-                    userGreetingElement.textContent = `Hello, ${user.email || 'Pengguna'}`;
+                    userGreetingElement.textContent = `Hello, Pengguna`;
                     userGreetingElement.classList.remove('hidden');
-                    userInitialElement.textContent = (user.email ? user.email.charAt(0) : 'P').toUpperCase();
+                    userInitialElement.textContent = (user.uid ? user.uid.charAt(0) : 'P').toUpperCase();
 
                     // Initial listener setup with no filters (empty string values)
                     // The Firestore listener is set up here after the user is authenticated
-                    setupStudentListListener(db, auth.currentUser.uid, studentListElement, loadingStudentsElement, yearFilterElement.value, classFilterElement.value);
+                    setupStudentListListener(db, user.uid, studentListElement, loadingStudentsElement, yearFilterElement.value, classFilterElement.value);
                 } else {
                     console.log("User is not signed in.");
                     // Hide user info if no user is signed in
                     userGreetingElement.classList.add('hidden');
                     userInitialElement.textContent = 'A';
-                    // Optional: Redirect to login page or show a login message
                 }
             });
 
+            // --- Logout button handler ---
             if (logoutButton) {
                 logoutButton.addEventListener('click', async () => {
                     try {
@@ -455,7 +480,8 @@
                     }
                 });
             }
-
+            
+            // --- Handle student registration form submission ---
             if (registrationForm) {
                 registrationForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
@@ -465,7 +491,7 @@
                     const studentGender = registrationForm.studentGender.value;
                     const studentYear = studentYearSelect.value;
                     const studentClass = studentClassSelect.value;
-                    const userId = auth.currentUser ? auth.currentUser.uid : 'anonymous';
+                    const userId = auth.currentUser ? auth.currentUser.uid : crypto.randomUUID();
                     
                     if (!studentYear || !studentClass) {
                         statusMessage.textContent = "Sila pilih Tahun dan Kelas.";
@@ -485,7 +511,7 @@
 
                     try {
                         // Store student data under the user's specific path
-                        const studentDocRef = doc(db, `users/${userId}/students`, studentIdCard);
+                        const studentDocRef = doc(db, `artifacts/${appId}/users/${userId}/students`, studentIdCard);
                         await setDoc(studentDocRef, studentData);
 
                         statusMessage.textContent = "Pendaftaran murid berjaya!";
@@ -513,10 +539,12 @@
                 });
             }
             
-            // Add change event listeners to the filter dropdowns
+            // Add change event listeners to the filter dropdowns and search input
             yearFilterElement.addEventListener('change', updateStudentList);
             classFilterElement.addEventListener('change', updateStudentList);
+            searchInput.addEventListener('keyup', filterAndRenderStudents);
             
+            // --- Function to update the student list based on filters ---
             function updateStudentList() {
                 // Only update if the user is authenticated
                 if (auth.currentUser) {
@@ -535,11 +563,48 @@
                 }
             }
 
-            // Function to set up the Firestore listener for student data
+            // --- Function to filter and render students from the 'allStudents' array ---
+            function filterAndRenderStudents() {
+                const query = searchInput.value.toLowerCase();
+                const filteredStudents = allStudents.filter(student =>
+                    student.nama.toLowerCase().includes(query) ||
+                    student.kad_pengenalan.toLowerCase().includes(query)
+                );
+                renderStudentCards(filteredStudents, studentListElement);
+            }
+
+            // --- Function to render student cards based on a provided array ---
+            function renderStudentCards(students, listElement) {
+                listElement.innerHTML = '';
+                if (students.length > 0) {
+                    students.forEach(student => {
+                        const studentCard = document.createElement('div');
+                        studentCard.className = 'p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between student-card';
+                        studentCard.innerHTML = `
+                            <div class="flex items-center">
+                                <div class="avatar bg-blue-500 mr-4">
+                                    <span>${student.nama.charAt(0).toUpperCase()}</span>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">${student.nama}</p>
+                                    <p class="text-sm text-gray-500">Tahun: ${student.tahun}, Kelas: ${student.kelas}</p>
+                                    <p class="text-xs text-gray-400">ID: ${student.kad_pengenalan}</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-ellipsis-v text-gray-400"></i>
+                        `;
+                        listElement.appendChild(studentCard);
+                    });
+                } else {
+                    listElement.innerHTML = `<p class="text-gray-500 text-center">Tiada murid yang berdaftar lagi.</p>`;
+                }
+            }
+
+            // --- Function to set up the Firestore listener for student data ---
             function setupStudentListListener(dbInstance, userId, listElement, loadingElement, yearFilter = '', classFilter = '') {
                 let studentsQuery;
                 // Construct the secure Firestore collection path
-                const studentsCol = collection(dbInstance, `users/${userId}/students`);
+                const studentsCol = collection(dbInstance, `artifacts/${appId}/users/${userId}/students`);
 
                 // Create the query based on the selected filters
                 if (yearFilter && classFilter) {
@@ -558,34 +623,12 @@
 
                 // Start listening for real-time changes
                 unsubscribeFromStudents = onSnapshot(studentsQuery, (snapshot) => {
-                    const students = snapshot.docs.map(doc => ({
+                    allStudents = snapshot.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data()
                     }));
                     
-                    listElement.innerHTML = ''; // Clear previous student cards
-                    
-                    if (students.length > 0) {
-                        students.forEach(student => {
-                            const studentCard = document.createElement('div');
-                            studentCard.className = 'p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between student-card';
-                            studentCard.innerHTML = `
-                                <div class="flex items-center">
-                                    <div class="avatar bg-blue-500 mr-4">
-                                        <span>${student.nama.charAt(0).toUpperCase()}</span>
-                                    </div>
-                                    <div>
-                                        <p class="font-semibold text-gray-800">${student.nama}</p>
-                                        <p class="text-sm text-gray-500">Tahun: ${student.tahun}, Kelas: ${student.kelas}</p>
-                                    </div>
-                                </div>
-                                <i class="fas fa-ellipsis-v text-gray-400"></i>
-                            `;
-                            listElement.appendChild(studentCard);
-                        });
-                    } else {
-                        listElement.innerHTML = `<p class="text-gray-500 text-center">Tiada murid yang berdaftar lagi.</p>`;
-                    }
+                    filterAndRenderStudents(); // Render the students after fetching
                     
                     loadingElement.classList.add('hidden');
                     hideFirebaseError();
@@ -601,7 +644,58 @@
                 });
             }
 
-            // UI logic for switching between sections
+            // --- Function to export data to CSV ---
+            exportButton.addEventListener('click', () => {
+                const studentsToExport = allStudents;
+                if (studentsToExport.length === 0) {
+                    alert('Tiada data murid untuk dieksport.');
+                    return;
+                }
+
+                // Get selected columns
+                const columns = [];
+                if (document.getElementById('exportIdCard').checked) columns.push({ key: 'kad_pengenalan', title: 'Kad Pengenalan' });
+                if (document.getElementById('exportName').checked) columns.push({ key: 'nama', title: 'Nama Penuh' });
+                if (document.getElementById('exportGender').checked) columns.push({ key: 'jantina', title: 'Jantina' });
+                if (document.getElementById('exportYear').checked) columns.push({ key: 'tahun', title: 'Tahun' });
+                if (document.getElementById('exportClass').checked) columns.push({ key: 'kelas', title: 'Kelas' });
+                if (document.getElementById('exportTimestamp').checked) columns.push({ key: 'createdAt', title: 'Tarikh Pendaftaran' });
+
+                if (columns.length === 0) {
+                    alert('Sila pilih sekurang-kurangnya satu medan untuk dieksport.');
+                    return;
+                }
+
+                // Create CSV content
+                let csvContent = columns.map(col => `"${col.title}"`).join(',') + '\n';
+                studentsToExport.forEach(student => {
+                    const row = columns.map(col => {
+                        let value = student[col.key];
+                        if (col.key === 'createdAt' && value && value.toDate) {
+                            value = value.toDate().toLocaleString();
+                        }
+                        return `"${value}"`;
+                    }).join(',');
+                    csvContent += row + '\n';
+                });
+
+                // Create and trigger download
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                if (link.download !== undefined) {
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', 'student_data.csv');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    alert('Pelayar anda tidak menyokong muat turun automatik.');
+                }
+            });
+
+            // --- UI logic for switching between sections ---
             const sidebarItems = document.querySelectorAll('.sidebar-item');
             const sectionContents = document.querySelectorAll('.section-content');
             const sectionTitle = document.getElementById('section-title');
@@ -610,35 +704,40 @@
             const sectionData = {
                 'jadual': { title: 'Jadual', description: 'Urus jadual kelas dan acara' },
                 'daftar-murid': { title: 'Daftar Murid', description: 'Daftarkan murid baharu ke dalam sistem' },
-                'senarai-murid': { title: 'Senarai Murid', description: 'Lihat senarai lengkap murid yang berdaftar' },
-                'kehadiran': { title: 'Kehadiran', description: 'Rekod dan pantau kehadiran pelajar' },
-                'pemarkahan': { title: 'Pemarkahan', description: 'Masukkan dan semak pemarkahan pelajar' },
-                'eksport': { title: 'Eksport CSV', description: 'Eksport data pelajar dalam format CSV' }
+                'senarai-murid': { title: 'Senarai Murid', description: 'Lihat dan urus semua murid berdaftar' },
+                'kehadiran': { title: 'Kehadiran', description: 'Rekod dan semak kehadiran harian' },
+                'pemarkahan': { title: 'Pemarkahan', description: 'Masukkan dan semak markah pelajar' },
+                'eksport': { title: 'Eksport CSV', description: 'Eksport data murid ke fail CSV' }
             };
-            
-            function switchSection(sectionId) {
-                sectionContents.forEach(section => { section.classList.add('hidden'); });
-                const targetSection = document.getElementById(`${sectionId}-section`);
-                if (targetSection) { targetSection.classList.remove('hidden'); }
-                sidebarItems.forEach(item => { item.classList.remove('active'); });
-                const activeItem = document.querySelector(`.sidebar-item[data-section="${sectionId}"]`);
-                if (activeItem) { activeItem.classList.add('active'); }
-                if (sectionData[sectionId]) {
-                    sectionTitle.textContent = sectionData[sectionId].title;
-                    sectionDescription.textContent = sectionData[sectionId].description;
-                }
-            }
-            
+
             sidebarItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const sectionId = this.getAttribute('data-section');
-                    if (sectionId && sectionId !== 'log-keluar') { // Ensure a sectionId exists and it's not the logout button
-                        switchSection(sectionId);
+                item.addEventListener('click', () => {
+                    const targetSectionId = item.getAttribute('data-section');
+                    if (targetSectionId === 'logout-button') return;
+
+                    // Remove active class from all sidebar items
+                    sidebarItems.forEach(i => i.classList.remove('active'));
+                    // Add active class to the clicked item
+                    item.classList.add('active');
+
+                    // Hide all content sections
+                    sectionContents.forEach(section => section.classList.add('hidden'));
+                    // Show the target section
+                    document.getElementById(`${targetSectionId}-section`).classList.remove('hidden');
+
+                    // Update the header title and description
+                    const data = sectionData[targetSectionId];
+                    if (data) {
+                        sectionTitle.textContent = data.title;
+                        sectionDescription.textContent = data.description;
+                    }
+
+                    // For the student list section, trigger a refresh to ensure it's up to date
+                    if (targetSectionId === 'senarai-murid' && auth.currentUser) {
+                        updateStudentList();
                     }
                 });
             });
-
-            switchSection('jadual');
         });
     </script>
 </body>
