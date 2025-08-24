@@ -49,10 +49,14 @@
             background-color: #4285F4;
             transition: all 0.3s ease;
         }
-        .btn-google:hover {
+        .btn-google:hover:not(:disabled) {
             background-color: #357ae8;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(66, 133, 244, 0.25);
+        }
+        .btn-google:disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -69,8 +73,13 @@
         <!-- Alert Container -->
         <div id="alertContainer" class="hidden p-4 mb-4 text-sm rounded-lg text-left" role="alert"></div>
 
+        <!-- Passcode Input Field -->
+        <div class="mb-4">
+            <input type="text" id="passcode-input" placeholder="Enter Access Code" class="input-focus-effect w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 transition-all duration-300 text-center text-lg font-mono tracking-wide" />
+        </div>
+
         <!-- Google Sign-In Button -->
-        <button id="google-signin-btn" class="btn-google w-full p-3 text-white rounded-lg font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 flex items-center justify-center">
+        <button id="google-signin-btn" disabled class="btn-google w-full p-3 text-white rounded-lg font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 flex items-center justify-center">
             <i class="fab fa-google mr-3"></i> Sign in with Google
         </button>
     </div>
@@ -99,6 +108,8 @@
         const loginCard = document.getElementById('login-card');
         const alertContainer = document.getElementById('alertContainer');
         const googleSigninBtn = document.getElementById('google-signin-btn');
+        const passcodeInput = document.getElementById('passcode-input');
+        const requiredPasscode = "XBA3048";
 
         const showAlert = (message, type) => {
             alertContainer.className = `p-4 mb-4 text-sm rounded-lg text-left ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
@@ -106,6 +117,16 @@
             alertContainer.innerHTML = `<i class="${icon} mr-2"></i> ${message}`;
             alertContainer.classList.remove('hidden');
         };
+
+        // Event listener for the passcode input field
+        passcodeInput.addEventListener('input', () => {
+            // Check if the entered passcode matches the required one
+            if (passcodeInput.value.trim() === requiredPasscode) {
+                googleSigninBtn.disabled = false;
+            } else {
+                googleSigninBtn.disabled = true;
+            }
+        });
 
         // Handle Google sign-in button click
         googleSigninBtn.addEventListener('click', async () => {
@@ -130,7 +151,10 @@
                 
                 // Reset button state
                 googleSigninBtn.innerHTML = '<i class="fab fa-google mr-3"></i> Sign in with Google';
-                googleSigninBtn.disabled = false;
+                // Check passcode again to re-enable the button if it's correct
+                if (passcodeInput.value.trim() === requiredPasscode) {
+                    googleSigninBtn.disabled = false;
+                }
             }
         });
 
