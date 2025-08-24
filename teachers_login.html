@@ -138,7 +138,7 @@
                 await signInWithPopup(auth, provider);
 
             } catch (error) {
-                // Handle a specific error case for unauthorized domains
+                // Handle a specific error case for unauthorized domains 
                 if (error.code === 'auth/unauthorized-domain') {
                     const origin = window.location.origin;
                     showAlert(`Sign-in failed. Please go to your Firebase console, navigate to Authentication > Settings, and add this domain to the authorized domains list: <strong>${origin}</strong>`, 'error');
