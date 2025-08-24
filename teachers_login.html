@@ -104,117 +104,102 @@
         </button>
     </div>
 
-    <!-- Supabase SDK -->
-    <script type="module">
+<script type="module">
         import { createClient } from '@supabase/supabase-js'
         const supabaseUrl = 'https://qamvnsesyssxyohhowag.supabase.co'
         const supabaseKey = process.env.SUPABASE_KEY
         const supabase = createClient(supabaseUrl, supabaseKey)
-    </script>
-    
-    <script>
-            
-        // DOM elements
-        const loginCard = document.getElementById('login-card');
-        const alertContainer = document.getElementById('alertContainer');
-        const googleSigninBtn = document.getElementById('google-signin-btn');
-        const passcodeInput = document.getElementById('passcode-input');
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const requiredPasscode = "XBA3048";
 
-        // Debug function
-        function debugLog(message) {
-            console.log(`[DEBUG] ${message}`);
-        }
+    // All your existing login logic goes here
+    const loginCard = document.getElementById('login-card');
+    const alertContainer = document.getElementById('alertContainer');
+    const googleSigninBtn = document.getElementById('google-signin-btn');
+    const passcodeInput = document.getElementById('passcode-input');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const requiredPasscode = "XBA3048";
 
-        // Show alert message
-        const showAlert = (message, type) => {
-            alertContainer.className = `p-4 mb-4 text-sm rounded-lg text-left ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
-            const icon = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
-            alertContainer.innerHTML = `<i class="${icon} mr-2"></i> ${message}`;
-            alertContainer.classList.remove('hidden');
-        };
+    function debugLog(message) {
+        console.log(`[DEBUG] ${message}`);
+    }
 
-        // Event listener for the passcode input field
-        passcodeInput.addEventListener('input', () => {
-            const inputValue = passcodeInput.value.trim();
-            debugLog(`Input value: "${inputValue}", Required: "${requiredPasscode}"`);
-            debugLog(`Match: ${inputValue === requiredPasscode}`);
-            
-            // Check if the entered passcode matches the required one
-            googleSigninBtn.disabled = inputValue !== requiredPasscode;
-            
-            // Visual feedback
-            if (inputValue === requiredPasscode) {
-                passcodeInput.classList.add('border-green-500');
-                passcodeInput.classList.remove('border-red-500');
-            } else {
-                passcodeInput.classList.add('border-red-500');
-                passcodeInput.classList.remove('border-green-500');
-            }
-        });
+    const showAlert = (message, type) => {
+        alertContainer.className = `p-4 mb-4 text-sm rounded-lg text-left ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+        const icon = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+        alertContainer.innerHTML = `<i class="${icon} mr-2"></i> ${message}`;
+        alertContainer.classList.remove('hidden');
+    };
 
-        // Handle Google sign-in button click
-        googleSigninBtn.addEventListener('click', async () => {
-            try {
-                // Show loading state
-                loadingOverlay.classList.remove('hidden');
-                googleSigninBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i> Signing in...';
-                googleSigninBtn.disabled = true;
-
-                // Sign in with Google via Supabase
-                const { error } = await supabase.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: window.location.origin
-                    }
-                });
-
-                if (error) {
-                    throw error;
-                }
-
-            } catch (error) {
-                console.error("Sign-in error: ", error);
-                showAlert('Sign-in failed. Please try again.', 'error');
-                
-                loginCard.classList.add('shake');
-                
-                // Reset button state
-                googleSigninBtn.innerHTML = '<i class="fab fa-google mr-3"></i> Sign in with Google';
-                googleSigninBtn.disabled = passcodeInput.value.trim() !== requiredPasscode;
-                
-                // Remove shake animation after it completes
-                setTimeout(() => {
-                    loginCard.classList.remove('shake');
-                }, 500);
-            } finally {
-                loadingOverlay.classList.add('hidden');
-            }
-        });
+    // The rest of your login logic
+    passcodeInput.addEventListener('input', () => {
+        const inputValue = passcodeInput.value.trim();
+        debugLog(`Input value: "${inputValue}", Required: "${requiredPasscode}"`);
+        debugLog(`Match: ${inputValue === requiredPasscode}`);
         
-        // Check if user is already logged in
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                debugLog("User already logged in: " + session.user.email);
-                showAlert('You are already logged in. Redirecting...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'teachers_dashboard.html';
-                }, 1500);
-            }
-        });
+        googleSigninBtn.disabled = inputValue !== requiredPasscode;
+        
+        if (inputValue === requiredPasscode) {
+            passcodeInput.classList.add('border-green-500');
+            passcodeInput.classList.remove('border-red-500');
+        } else {
+            passcodeInput.classList.add('border-red-500');
+            passcodeInput.classList.remove('border-green-500');
+        }
+    });
 
-        // Listen for authentication state changes
-        supabase.auth.onAuthStateChange((event, session) => {
-            debugLog(`Auth event: ${event}`);
-            if (event === 'SIGNED_IN' && session) {
-                debugLog("User signed in: " + session.user.email);
-                showAlert('Login successful! Redirecting...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'teachers_dashboard.html';
-                }, 1500);
+    googleSigninBtn.addEventListener('click', async () => {
+        try {
+            loadingOverlay.classList.remove('hidden');
+            googleSigninBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i> Signing in...';
+            googleSigninBtn.disabled = true;
+
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin
+                }
+            });
+
+            if (error) {
+                throw error;
             }
-        });
-    </script>
+
+        } catch (error) {
+            console.error("Sign-in error: ", error);
+            showAlert('Sign-in failed. Please try again.', 'error');
+            
+            loginCard.classList.add('shake');
+            
+            googleSigninBtn.innerHTML = '<i class="fab fa-google mr-3"></i> Sign in with Google';
+            googleSigninBtn.disabled = passcodeInput.value.trim() !== requiredPasscode;
+            
+            setTimeout(() => {
+                loginCard.classList.remove('shake');
+            }, 500);
+        } finally {
+            loadingOverlay.classList.add('hidden');
+        }
+    });
+    
+    supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+            debugLog("User already logged in: " + session.user.email);
+            showAlert('You are already logged in. Redirecting...', 'success');
+            setTimeout(() => {
+                window.location.href = 'teachers_dashboard.html';
+            }, 1500);
+        }
+    });
+
+    supabase.auth.onAuthStateChange((event, session) => {
+        debugLog(`Auth event: ${event}`);
+        if (event === 'SIGNED_IN' && session) {
+            debugLog("User signed in: " + session.user.email);
+            showAlert('Login successful! Redirecting...', 'success');
+            setTimeout(() => {
+                window.location.href = 'teachers_dashboard.html';
+            }, 1500);
+        }
+    });
+</script>
 </body>
 </html>
