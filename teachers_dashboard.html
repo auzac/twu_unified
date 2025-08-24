@@ -485,7 +485,7 @@
 
                     try {
                         // Store student data under the user's specific path - using maklumat_murid collection
-                        const studentDocRef = doc(db, `users/${userId}/maklumat_murid`, studentIdCard);
+                        const studentDocRef = doc(db, `artifacts/${appId}/users/${userId}/maklumat_murid`, studentIdCard);
                         await setDoc(studentDocRef, studentData);
 
                         statusMessage.textContent = "Pendaftaran murid berjaya!";
@@ -539,7 +539,7 @@
             function setupStudentListListener(dbInstance, userId, listElement, loadingElement, yearFilter = '', classFilter = '') {
                 let studentsQuery;
                 // Construct the secure Firestore collection path - using maklumat_murid collection
-                const studentsCol = collection(dbInstance, `users/${userId}/maklumat_murid`);
+                const studentsCol = collection(dbInstance, `artifacts/${appId}/users/${userId}/maklumat_murid`);
 
                 // Create the query based on the selected filters
                 if (yearFilter && classFilter) {
