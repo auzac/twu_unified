@@ -112,15 +112,13 @@
         const supabaseKey = process.env.SUPABASE_KEY
         const supabase = createClient(supabaseUrl, supabaseKey)
 
-        const googleSignInBtn = document.getElementById('google-signin-btn');
-        const alertContainer = document.getElementById('alertContainer');
         const loginCard = document.getElementById('login-card');
         const alertContainer = document.getElementById('alertContainer');
         const googleSigninBtn = document.getElementById('google-signin-btn');
         const passcodeInput = document.getElementById('passcode-input');
         const loadingOverlay = document.getElementById('loading-overlay');
         const requiredPasscode = "XBA3048";
-                
+
         function showMessage(message, type) {
             alertContainer.textContent = message;
             alertContainer.className = `p-4 mb-4 text-sm rounded-lg ${type === 'error' ? 'text-red-800 bg-red-50' : 'text-green-800 bg-green-50'}`;
