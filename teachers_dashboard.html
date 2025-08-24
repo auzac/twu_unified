@@ -206,14 +206,14 @@
                         <div class="flex-1">
                             <label for="yearFilter" class="block text-sm font-medium text-gray-700">Tapis Mengikut Tahun:</label>
                             <select id="yearFilter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="all">Semua Tahun</option>
+                                <option value="">Semua Tahun</option>
                                 <!-- Years will be populated by JavaScript -->
                             </select>
                         </div>
                         <div class="flex-1">
                             <label for="classFilter" class="block text-sm font-medium text-gray-700">Tapis Mengikut Kelas:</label>
                             <select id="classFilter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="all">Semua Kelas</option>
+                                <option value="">Semua Kelas</option>
                                 <!-- Classes will be populated by JavaScript -->
                             </select>
                         </div>
@@ -293,7 +293,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, collection, onSnapshot, query, where, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // IMPORTANT: Your Firebase config
         const firebaseConfig = {
@@ -318,11 +318,23 @@
         }
 
         let unsubscribeFromStudents = null; // Variable to hold the unsubscribe function for the listener
-
-        document.addEventListener('DOMContentLoaded', function() {
+        
+        document.addEventListener('DOMContentLoaded', async function() {
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             const db = getFirestore(app);
+
+            // Authentication setup
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Firebase authentication failed: ", error);
+            }
 
             const userGreetingElement = document.getElementById('user-greeting');
             const userInitialElement = document.getElementById('user-initial');
@@ -336,17 +348,8 @@
             const yearFilterElement = document.getElementById('yearFilter');
             const classFilterElement = document.getElementById('classFilter');
 
-            // Populate the year and class dropdowns
-            populateDropdown(studentYearSelect, yearList);
-            populateDropdown(yearFilterElement, ['all'].concat(yearList), 'Semua Tahun');
-            populateDropdown(studentClassSelect, classList);
-            populateDropdown(classFilterElement, ['all'].concat(classList), 'Semua Kelas');
-
-            // Set the current year as the default selected option for the registration form
-            studentYearSelect.value = currentYear.toString();
-            yearFilterElement.value = currentYear.toString(); // Set default filter to current year
-
-            // Function to populate a select element with an array of options
+            // --- Function to populate a select element with an array of options ---
+            // It now correctly handles the default "Semua" option without a separate "all" value.
             function populateDropdown(selectElement, options, allText = 'Pilih') {
                 selectElement.innerHTML = `<option value="">${allText}</option>`;
                 options.forEach(option => {
@@ -357,18 +360,26 @@
                 });
             }
 
+            // Populate the year and class dropdowns
+            populateDropdown(studentYearSelect, yearList);
+            populateDropdown(yearFilterElement, yearList, 'Semua Tahun');
+            populateDropdown(studentClassSelect, classList);
+            populateDropdown(classFilterElement, classList, 'Semua Kelas');
+
+            // Set the current year as the default selected option for the registration form
+            studentYearSelect.value = currentYear.toString();
+            // The filter dropdowns will now default to "Semua Tahun/Kelas" because their value is an empty string.
+
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     userGreetingElement.textContent = `Hello, ${user.email}`;
                     userGreetingElement.classList.remove('hidden');
                     userInitialElement.textContent = user.email.charAt(0).toUpperCase();
 
-                    // Set up the initial listener with default filters
-                    const defaultYearFilter = yearFilterElement.value || 'all';
-                    const defaultClassFilter = classFilterElement.value || 'all';
-                    setupStudentListListener(db, studentListElement, loadingStudentsElement, defaultYearFilter, defaultClassFilter);
+                    // Initial listener setup with no filters (empty string values)
+                    setupStudentListListener(db, studentListElement, loadingStudentsElement, yearFilterElement.value, classFilterElement.value);
                 } else {
-                    window.location.href = 'index.html';
+                    console.log("User is not signed in.");
                 }
             });
 
@@ -438,25 +449,36 @@
                 const selectedYear = yearFilterElement.value;
                 const selectedClass = classFilterElement.value;
 
+                // Unsubscribe the old listener before creating a new one
                 if (unsubscribeFromStudents) {
                     unsubscribeFromStudents();
                 }
+
+                // Pass the new filter values to the listener setup function
                 setupStudentListListener(db, studentListElement, loadingStudentsElement, selectedYear, selectedClass);
             }
 
-            function setupStudentListListener(db, listElement, loadingElement, yearFilter = 'all', classFilter = 'all') {
+            function setupStudentListListener(db, listElement, loadingElement, yearFilter = '', classFilter = '') {
                 let studentsQuery;
                 const studentsCol = collection(db, "maklumat_murid");
 
-                if (yearFilter === 'all' && classFilter === 'all') {
+                // --- FIX: The logic now checks for an empty string (`""`) which corresponds to the "Semua" option. ---
+                if (!yearFilter && !classFilter) {
+                    // Case 1: No filters selected ("Semua Tahun" and "Semua Kelas")
                     studentsQuery = studentsCol;
-                } else if (yearFilter === 'all') {
+                } else if (!yearFilter) {
+                    // Case 2: Only class filter is selected
                     studentsQuery = query(studentsCol, where("kelas", "==", classFilter));
-                } else if (classFilter === 'all') {
+                } else if (!classFilter) {
+                    // Case 3: Only year filter is selected
                     studentsQuery = query(studentsCol, where("tahun", "==", yearFilter));
                 } else {
+                    // Case 4: Both year and class filters are selected
                     studentsQuery = query(studentsCol, where("tahun", "==", yearFilter), where("kelas", "==", classFilter));
                 }
+
+                listElement.innerHTML = '';
+                loadingElement.classList.remove('hidden');
 
                 unsubscribeFromStudents = onSnapshot(studentsQuery, (snapshot) => {
                     const students = snapshot.docs.map(doc => ({
@@ -492,6 +514,7 @@
                 }, (error) => {
                     console.error("Error fetching students: ", error);
                     listElement.innerHTML = `<p class="text-red-500 text-center">Gagal memuatkan data murid.</p>`;
+                    loadingElement.classList.add('hidden');
                 });
             }
 
