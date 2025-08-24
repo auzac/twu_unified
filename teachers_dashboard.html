@@ -300,7 +300,7 @@
             apiKey: "AIzaSyBMHMRW48Y-kpIxYoSInUjmFwiJMBbscsY",
             authDomain: "skpht-f1739.firebaseapp.com",
             projectId: "skpht-f1739",
-            storageBucket: "skpht-f1739.firebasestorage.app",
+            storageBucket: "skpht-f1739.firebaseapp.com",
             messagingSenderId: "378324743644",
             appId: "1:378324743644:web:f33c9614f2e03d65b54b19",
             measurementId: "G-NKSJ2G26FY"
@@ -344,6 +344,7 @@
 
             // Set the current year as the default selected option for the registration form
             studentYearSelect.value = currentYear.toString();
+            yearFilterElement.value = currentYear.toString(); // Set default filter to current year
 
             // Function to populate a select element with an array of options
             function populateDropdown(selectElement, options, allText = 'Pilih') {
