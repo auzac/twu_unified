@@ -132,6 +132,27 @@
         alertContainer.classList.remove('hidden');
     };
 
+    // New function to handle sign out on page load
+    const resetAuthState = async () => {
+        try {
+            loadingOverlay.classList.remove('hidden');
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error("Supabase sign-out error:", error.message);
+            }
+            debugLog("Supabase user signed out successfully.");
+        } catch (error) {
+            console.error("Error signing out:", error);
+        } finally {
+            loadingOverlay.classList.add('hidden');
+        }
+    };
+    
+    // Call the sign-out function on page load to ensure a clean slate
+    window.addEventListener('load', async () => {
+        await resetAuthState();
+    });
+
     // The rest of your login logic
     passcodeInput.addEventListener('input', () => {
         const inputValue = passcodeInput.value.trim();
@@ -183,16 +204,7 @@
         }
     });
     
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) {
-            debugLog("User already logged in: " + session.user.email);
-            showAlert('You are already logged in. Redirecting...', 'success');
-            setTimeout(() => {
-                window.location.href = 'teachers_dashboard.html';
-            }, 1500);
-        }
-    });
-
+    // Listen for authentication state changes and redirect
     supabase.auth.onAuthStateChange((event, session) => {
         debugLog(`Auth event: ${event}`);
         if (event === 'SIGNED_IN' && session) {
