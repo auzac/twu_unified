@@ -4,8 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Papan Pemuka Pengurusan Pelajar</title>
-    <!-- Use Tailwind CSS for a modern, responsive design -->
+    <!-- Use Tailwind CSS via CDN (production version) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configure Tailwind for production
+        tailwind.config = {
+            important: true,
+            corePlugins: {
+                preflight: true,
+            }
+        }
+    </script>
     <!-- Use Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS for unique styles not easily done with Tailwind -->
@@ -298,14 +307,22 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
+        // Firebase configuration - replace with your actual Firebase config
+            const firebaseConfig = {
+              apiKey: "AIzaSyBMHMRW48Y-kpIxYoSInUjmFwiJMBbscsY",
+              authDomain: "skpht-f1739.firebaseapp.com",
+              projectId: "skpht-f1739",
+              storageBucket: "skpht-f1739.firebasestorage.app",
+              messagingSenderId: "378324743644",
+              appId: "1:378324743644:web:f33c9614f2e03d65b54b19",
+              measurementId: "G-NKSJ2G26FY"
+            };
+
+        // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // --- IMPORTANT: Use provided global variables for Firebase configuration ---
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
         // The correct class list provided by the user
         const classList = ["1 Amanah", "2 Bijak", "3 Cemerlang", "4 Dinamik", "5 Efektif", "6 Gemilang"];
         
@@ -321,22 +338,10 @@
         let db, auth;
 
         document.addEventListener('DOMContentLoaded', async function() {
-            // Initialize Firebase services outside of the auth check
+            // Initialize Firebase
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
-
-            // Authentication setup
-            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-            try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Firebase authentication failed: ", error);
-            }
 
             const userGreetingElement = document.getElementById('user-greeting');
             const userInitialElement = document.getElementById('user-initial');
@@ -418,6 +423,7 @@
                     if (!studentYear || !studentClass) {
                         statusMessage.textContent = "Sila pilih Tahun dan Kelas.";
                         statusMessage.className = 'mt-4 p-4 text-sm rounded-lg bg-red-100 text-red-700';
+                        statusMessage.classList.remove('hidden');
                         return;
                     }
 
@@ -431,11 +437,12 @@
 
                     try {
                         // Store student data under the user's specific path
-                        const studentDocRef = doc(db, `/artifacts/${appId}/users/${userId}/students`, studentIdCard);
+                        const studentDocRef = doc(db, `users/${userId}/students`, studentIdCard);
                         await setDoc(studentDocRef, studentData);
 
                         statusMessage.textContent = "Pendaftaran murid berjaya!";
                         statusMessage.className = 'mt-4 p-4 text-sm rounded-lg bg-green-100 text-green-700';
+                        statusMessage.classList.remove('hidden');
                         
                         registrationForm.reset();
                         studentYearSelect.value = currentYear.toString(); // Reset year to current year
@@ -448,6 +455,7 @@
                         console.error("Error adding document: ", error);
                         statusMessage.textContent = "Ralat semasa mendaftarkan murid. Sila cuba lagi.";
                         statusMessage.className = 'mt-4 p-4 text-sm rounded-lg bg-red-100 text-red-700';
+                        statusMessage.classList.remove('hidden');
                     }
                 });
             }
@@ -478,7 +486,7 @@
             function setupStudentListListener(dbInstance, userId, listElement, loadingElement, yearFilter = '', classFilter = '') {
                 let studentsQuery;
                 // Construct the secure Firestore collection path
-                const studentsCol = collection(dbInstance, `/artifacts/${appId}/users/${userId}/students`);
+                const studentsCol = collection(dbInstance, `users/${userId}/students`);
 
                 // Create the query based on the selected filters
                 if (yearFilter && classFilter) {
