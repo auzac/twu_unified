@@ -45,23 +45,14 @@
             justify-content: center;
             box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
         }
-        .btn-login {
-            background: linear-gradient(to bottom right, #2563eb, #1d4ed8);
+        .btn-google {
+            background-color: #4285F4;
             transition: all 0.3s ease;
         }
-        .btn-login:hover {
-            background: linear-gradient(to bottom right, #1d4ed8, #1e40af);
+        .btn-google:hover {
+            background-color: #357ae8;
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.25);
-        }
-        .btn-cancel {
-            background: linear-gradient(to bottom right, #6b7280, #4b5563);
-            transition: all 0.3s ease;
-        }
-        .btn-cancel:hover {
-            background: linear-gradient(to bottom right, #4b5563, #374151);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(107, 114, 128, 0.2);
+            box-shadow: 0 6px 12px rgba(66, 133, 244, 0.25);
         }
     </style>
 </head>
@@ -78,120 +69,76 @@
         <!-- Alert Container -->
         <div id="alertContainer" class="hidden p-4 mb-4 text-sm rounded-lg text-left" role="alert"></div>
 
-        <!-- Login Form -->
-        <form id="loginForm" class="space-y-4">
-            <div class="relative">
-                <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <input type="text" id="schoolName" class="w-full p-3 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 input-focus-effect" placeholder="Username" aria-label="Username" required autocomplete="username">
-            </div>
-            
-            <div class="relative">
-                <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <input type="password" id="password" class="w-full p-3 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 input-focus-effect" placeholder="Password" aria-label="Password" required autocomplete="current-password">
-            </div>
-        
-            <div class="flex justify-between items-center text-sm text-gray-600 mt-4">
-                <label class="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600 rounded transition duration-150">
-                    <span class="ml-2 select-none">Remember me</span>
-                </label>
-            </div>
-
-            <div class="flex space-x-4 mt-6">
-                <button type="button" id="cancelBtn" class="btn-cancel flex-1 p-3 text-white rounded-lg font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
-                    CANCEL
-                </button>
-                <button id="loginBtn" type="submit" class="btn-login flex-1 p-3 text-white rounded-lg font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
-                    LOGIN
-                </button>
-            </div>
-        </form>
+        <!-- Google Sign-In Button -->
+        <button id="google-signin-btn" class="btn-google w-full p-3 text-white rounded-lg font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 flex items-center justify-center">
+            <i class="fab fa-google mr-3"></i> Sign in with Google
+        </button>
     </div>
 
-    <script>
-        const loginForm = document.getElementById('loginForm');
-        const schoolNameInput = document.getElementById('schoolName');
-        const passwordInput = document.getElementById('password');
-        const alertContainer = document.getElementById('alertContainer');
-        const loginCard = document.getElementById('login-card');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const validUsername = 'admin';
-        const validPassword = 'password123';
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         
+        // IMPORTANT: Paste your Firebase config here
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMHMRW48Y-kpIxYoSInUjmFwiJMBbscsY",
+            authDomain: "skpht-f1739.firebaseapp.com",
+            projectId: "skpht-f1739",
+            storageBucket: "skpht-f1739.firebasestorage.app",
+            messagingSenderId: "378324743644",
+            appId: "1:378324743644:web:f33c9614f2e03d65b54b19",
+            measurementId: "G-NKSJ2G26FY"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const loginCard = document.getElementById('login-card');
+        const alertContainer = document.getElementById('alertContainer');
+        const googleSigninBtn = document.getElementById('google-signin-btn');
+
         const showAlert = (message, type) => {
             alertContainer.className = `p-4 mb-4 text-sm rounded-lg text-left ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
             const icon = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
             alertContainer.innerHTML = `<i class="${icon} mr-2"></i> ${message}`;
             alertContainer.classList.remove('hidden');
-            
-            // Auto-hide success message after 3 seconds
-            if (type === 'success') {
-                setTimeout(() => {
-                    alertContainer.classList.add('hidden');
-                }, 3000);
-            }
         };
-        
-        const handleLogin = (e) => {
-            if (e) e.preventDefault();
-            
-            const username = schoolNameInput.value.trim();
-            const password = passwordInput.value.trim();
-            alertContainer.classList.add('hidden');
-            loginCard.classList.remove('shake');
-            
-            // Form validation
-            if (!username || !password) {
-                showAlert('Please fill in all fields.', 'error');
-                if (!username) {
-                    schoolNameInput.focus();
-                } else {
-                    passwordInput.focus();
-                }
-                return;
-            }
-            
-            if (username === validUsername && password === validPassword) {
-                showAlert('Login successful! Redirecting...', 'success');
-                // Simulate successful login
-                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                loginBtn.disabled = true;
+
+        // Handle Google sign-in button click
+        googleSigninBtn.addEventListener('click', async () => {
+            try {
+                // Show loading state
+                googleSigninBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i> Signing in...';
+                googleSigninBtn.disabled = true;
+
+                await signInWithPopup(auth, provider);
+
+            } catch (error) {
+                // Handle errors
+                console.error("Sign-in error: ", error);
+                showAlert('Sign-in failed. Please try again.', 'error');
+                loginCard.classList.add('shake');
                 
-                // Simulate redirect after successful login
+                // Reset button state
+                googleSigninBtn.innerHTML = '<i class="fab fa-google mr-3"></i> Sign in with Google';
+                googleSigninBtn.disabled = false;
+            }
+        });
+
+        // Listen for authentication state changes to handle redirection
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                showAlert('Login successful! Redirecting...', 'success');
+                // Use a short delay for the user to see the success message before redirecting
                 setTimeout(() => {
+                    // Redirect to the dashboard page
                     window.location.href = 'teachers_dashboard.html';
                 }, 1500);
-            } else {
-                showAlert('Invalid username or password.', 'error');
-                loginCard.classList.add('shake');
-                passwordInput.value = '';
-                passwordInput.focus();
             }
-        };
-
-        // Handle cancel button click
-        const handleCancel = () => {
-            // Redirect to index.html
-            window.location.href = 'index.html';
-        };
-
-        loginForm.addEventListener('submit', handleLogin);
-        cancelBtn.addEventListener('click', handleCancel);
-        
-        // Add input event listeners to remove error state when typing
-        schoolNameInput.addEventListener('input', () => {
-            alertContainer.classList.add('hidden');
-            loginCard.classList.remove('shake');
-        });
-        
-        passwordInput.addEventListener('input', () => {
-            alertContainer.classList.add('hidden');
-            loginCard.classList.remove('shake');
-        });
-
-        // Set focus to username input on page load
-        window.addEventListener('load', () => {
-            schoolNameInput.focus();
         });
     </script>
 </body>
