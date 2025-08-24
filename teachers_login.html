@@ -58,9 +58,29 @@
             background-color: #a0aec0;
             cursor: not-allowed;
         }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body class="p-4">
+    <!-- Loading overlay for sign out process -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin text-blue-500 text-4xl mb-2"></i>
+            <p class="text-gray-700">Resetting session...</p>
+        </div>
+    </div>
+
     <div class="login-container" id="login-card">
         <!-- User Icon -->
         <div class="user-icon">
@@ -87,7 +107,7 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         
         // IMPORTANT: Your Firebase config
         const firebaseConfig = {
@@ -109,6 +129,7 @@
         const alertContainer = document.getElementById('alertContainer');
         const googleSigninBtn = document.getElementById('google-signin-btn');
         const passcodeInput = document.getElementById('passcode-input');
+        const loadingOverlay = document.getElementById('loading-overlay');
         const requiredPasscode = "XBA3048";
 
         const showAlert = (message, type) => {
@@ -117,6 +138,25 @@
             alertContainer.innerHTML = `<i class="${icon} mr-2"></i> ${message}`;
             alertContainer.classList.remove('hidden');
         };
+
+        // Function to reset authentication state
+        const resetAuthState = async () => {
+            try {
+                loadingOverlay.classList.remove('hidden');
+                // Sign out any existing user
+                await signOut(auth);
+                console.log("User signed out successfully");
+            } catch (error) {
+                console.error("Error signing out:", error);
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
+        };
+
+        // Reset authentication state when page loads
+        window.addEventListener('load', async () => {
+            await resetAuthState();
+        });
 
         // Event listener for the passcode input field
         passcodeInput.addEventListener('input', () => {
@@ -157,6 +197,7 @@
                 }
             }
         });
+        
         // Listen for authentication state changes to handle redirection
         onAuthStateChanged(auth, (user) => {
             if (user) {
