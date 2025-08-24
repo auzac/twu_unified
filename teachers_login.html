@@ -157,9 +157,7 @@
                 }
             }
         });
-
         // Listen for authentication state changes to handle redirection
-
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // User is signed in
@@ -171,7 +169,6 @@
                 }, 1500);
             }
         });
-
     </script>
 </body>
 </html>
