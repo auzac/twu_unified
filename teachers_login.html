@@ -138,7 +138,7 @@
                 await signInWithPopup(auth, provider);
 
             } catch (error) {
-                // Handle a specific error case for unauthorized domains
+                // Handle a specific error case for unauthorized domains 
                 if (error.code === 'auth/unauthorized-domain') {
                     const origin = window.location.origin;
                     showAlert(`Sign-in failed. Please go to your Firebase console, navigate to Authentication > Settings, and add this domain to the authorized domains list: <strong>${origin}</strong>`, 'error');
@@ -157,7 +157,6 @@
                 }
             }
         });
-
         // Listen for authentication state changes to handle redirection
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -166,7 +165,11 @@
                 // Use a short delay for the user to see the success message before redirecting
                 setTimeout(() => {
                     // Redirect to the dashboard page
+<<<<<<< HEAD
                     window.location.href = 'teachers_dashboard.html';
+=======
+                    window.location.href = 'teachers_dashboard.html'; //
+>>>>>>> d5aa73ea9a73597fb5b874e909d18df1d090b04a
                 }, 1500);
             }
         });
