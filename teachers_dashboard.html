@@ -109,7 +109,8 @@
         
         <div class="px-6">
             <div class="pt-4 border-t border-blue-400">
-                <div class="sidebar-item" data-section="log-keluar">
+                <!-- Change data-section to logout since it's a direct action -->
+                <div class="sidebar-item" id="logout-button">
                     <i class="fas fa-sign-out-alt w-5 mr-3 text-center"></i>
                     <span class="sidebar-text">Log Keluar</span>
                 </div>
@@ -126,12 +127,14 @@
                 <p class="text-gray-500 text-sm" id="section-description">Urus jadual kelas dan acara</p>
             </div>
             <div class="flex items-center">
+                <!-- Added a greeting for the user's email -->
+                <p id="user-greeting" class="text-gray-600 font-medium mr-4 hidden"></p>
                 <div class="relative mr-4">
                     <input type="text" placeholder="Cari..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
                 <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span class="font-semibold text-blue-600">A</span>
+                    <span class="font-semibold text-blue-600" id="user-initial">A</span>
                 </div>
             </div>
         </header>
@@ -206,25 +209,62 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Log Keluar Section (Hidden by default) -->
-            <div id="log-keluar-section" class="section-content hidden">
-                <div class="bg-white rounded-lg shadow p-6 text-center">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-sign-out-alt text-blue-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Log keluar dari akaun anda</h3>
-                    <p class="text-gray-600 mb-6">Adakah anda pasti mahu log keluar? Anda perlu log masuk semula untuk mengakses akaun anda.</p>
-                    <div class="flex justify-center space-x-3">
-                        <button class="px-4 py-2 border border-gray-300 rounded-lg">Batal</button>
-                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg">Log Keluar</button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
-    <script>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        
+        // IMPORTANT: Your Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMHMRW48Y-kpIxYoSInUjmFwiJMBbscsY",
+            authDomain: "skpht-f1739.firebaseapp.com",
+            projectId: "skpht-f1739",
+            storageBucket: "skpht-f1739.firebasestorage.app",
+            messagingSenderId: "378324743644",
+            appId: "1:378324743644:web:f33c9614f2e03d65b54b19",
+            measurementId: "G-NKSJ2G26FY"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Get DOM elements for user info
+        const userGreetingElement = document.getElementById('user-greeting');
+        const userInitialElement = document.getElementById('user-initial');
+        const logoutButton = document.getElementById('logout-button');
+
+        // Check user authentication status on page load
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in. Update the UI with their information.
+                userGreetingElement.textContent = `Hello, ${user.email}`;
+                userGreetingElement.classList.remove('hidden');
+                
+                // Set the user's initial in the avatar
+                userInitialElement.textContent = user.email.charAt(0).toUpperCase();
+            } else {
+                // User is signed out. Redirect to the login page.
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Add a click event listener to the logout button
+        if (logoutButton) {
+            logoutButton.addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    // The onAuthStateChanged listener will handle the redirection after a successful sign-out.
+                } catch (error) {
+                    console.error("Logout error: ", error);
+                }
+            });
+        }
+
+        // The existing code for switching sections
         document.addEventListener('DOMContentLoaded', function() {
             // Get all sidebar items
             const sidebarItems = document.querySelectorAll('.sidebar-item');
@@ -249,10 +289,6 @@
                 'eksport': {
                     title: 'Eksport CSV',
                     description: 'Eksport data pelajar dalam format CSV'
-                },
-                'log-keluar': {
-                    title: 'Log Keluar',
-                    description: 'Keluar dari akaun anda'
                 }
             };
             
@@ -264,24 +300,35 @@
                 });
                 
                 // Show the selected section
-                document.getElementById(`${sectionId}-section`).classList.remove('hidden');
+                const targetSection = document.getElementById(`${sectionId}-section`);
+                if (targetSection) {
+                    targetSection.classList.remove('hidden');
+                }
                 
                 // Update active sidebar item
                 sidebarItems.forEach(item => {
                     item.classList.remove('active');
                 });
-                document.querySelector(`.sidebar-item[data-section="${sectionId}"]`).classList.add('active');
+                const activeItem = document.querySelector(`.sidebar-item[data-section="${sectionId}"]`);
+                if (activeItem) {
+                    activeItem.classList.add('active');
+                }
                 
                 // Update header title and description
-                sectionTitle.textContent = sectionData[sectionId].title;
-                sectionDescription.textContent = sectionData[sectionId].description;
+                if (sectionData[sectionId]) {
+                    sectionTitle.textContent = sectionData[sectionId].title;
+                    sectionDescription.textContent = sectionData[sectionId].description;
+                }
             }
             
             // Add click event listeners to sidebar items
             sidebarItems.forEach(item => {
                 item.addEventListener('click', function() {
                     const sectionId = this.getAttribute('data-section');
-                    switchSection(sectionId);
+                    // Prevent the log-keluar button from changing sections
+                    if (sectionId !== 'log-keluar') {
+                        switchSection(sectionId);
+                    }
                 });
             });
             
