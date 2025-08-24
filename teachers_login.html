@@ -159,17 +159,18 @@
         });
 
         // Listen for authentication state changes to handle redirection
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in
-                showAlert('Login successful! Redirecting...', 'success');
-                // Use a short delay for the user to see the success message before redirecting
-                setTimeout(() => {
-                    // Redirect to the dashboard page
-                    window.location.href = 'teachers_dashboard.html';
-                }, 1500);
-            }
-        });
+        // This is a common pattern, but it triggers on page load if a user is already signed in.
+        // We will remove this to prevent immediate redirection and instead handle it on successful sign-in.
+        // We'll also address the import error.
+        
+        // The original code in teachers_dashboard.html has a syntax error.
+        // The import for firebase-firestore does not provide 'signInAnonymously'.
+        // You should import signInAnonymously from firebase-auth.
+
+        // You should also remove this redirect logic to prevent the immediate redirection on a page refresh.
+        // This code block is a duplicate of the logic that will be in the sign-in popup.
+        // Keeping it here would cause the redirect to happen without the user needing to enter the code.
+        // To fix this, we will rely on the `signInWithPopup` success to handle the redirect.
     </script>
 </body>
 </html>
