@@ -510,8 +510,8 @@
                     };
 
                     try {
-                        // Store student data under the user's specific path
-                        const studentDocRef = doc(db, `artifacts/${appId}/users/${userId}/students`, studentIdCard);
+                        // Corrected: Storing student data under the 'maklumat_murid' collection
+                        const studentDocRef = doc(db, `artifacts/${appId}/users/${userId}/maklumat_murid`, studentIdCard);
                         await setDoc(studentDocRef, studentData);
 
                         statusMessage.textContent = "Pendaftaran murid berjaya!";
@@ -601,85 +601,156 @@
             }
 
             // --- Function to set up the Firestore listener for student data ---
-            function setupStudentListListener(dbInstance, userId, listElement, loadingElement, yearFilter = '', classFilter = '') {
-                let studentsQuery;
-                // Construct the secure Firestore collection path
-                const studentsCol = collection(dbInstance, `artifacts/${appId}/users/${userId}/students`);
+            function setupStudentListListener(dbInstance, userId, listElement, loadingElement, yearFilter, classFilter) {
+                loadingElement.classList.remove('hidden');
+                listElement.innerHTML = '';
 
-                // Create the query based on the selected filters
-                if (yearFilter && classFilter) {
-                    studentsQuery = query(studentsCol, where("tahun", "==", yearFilter), where("kelas", "==", classFilter));
-                } else if (yearFilter) {
-                    studentsQuery = query(studentsCol, where("tahun", "==", yearFilter));
-                } else if (classFilter) {
-                    studentsQuery = query(studentsCol, where("kelas", "==", classFilter));
-                } else {
-                    // No filters, get all students
-                    studentsQuery = studentsCol;
+                let studentsCollectionRef = collection(dbInstance, `artifacts/${appId}/users/${userId}/maklumat_murid`);
+                let q = query(studentsCollectionRef);
+
+                // Add optional year filter
+                if (yearFilter) {
+                    q = query(q, where('tahun', '==', yearFilter));
+                }
+                
+                // Add optional class filter
+                if (classFilter) {
+                    q = query(q, where('kelas', '==', classFilter));
                 }
 
-                listElement.innerHTML = '';
-                loadingElement.classList.remove('hidden');
+                try {
+                    // Unsubscribe from previous listener if it exists
+                    if (unsubscribeFromStudents) {
+                        unsubscribeFromStudents();
+                    }
 
-                // Start listening for real-time changes
-                unsubscribeFromStudents = onSnapshot(studentsQuery, (snapshot) => {
-                    allStudents = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data()
-                    }));
-                    
-                    filterAndRenderStudents(); // Render the students after fetching
-                    
-                    loadingElement.classList.add('hidden');
-                    hideFirebaseError();
-                }, (error) => {
-                    console.error("Error fetching students: ", error);
-                    listElement.innerHTML = `<p class="text-red-500 text-center">Gagal memuatkan data murid.</p>`;
-                    loadingElement.classList.add('hidden');
-                    
-                    // Show Firebase error if it's a permissions issue
-                    if (error.code === 'permission-denied') {
+                    // Listen for real-time updates
+                    unsubscribeFromStudents = onSnapshot(q, (snapshot) => {
+                        allStudents = []; // Clear the old list before populating
+                        snapshot.forEach((doc) => {
+                            allStudents.push({ id: doc.id, ...doc.data() });
+                        });
+
+                        loadingElement.classList.add('hidden');
+                        
+                        // Render the filtered students
+                        filterAndRenderStudents();
+                        hideFirebaseError();
+                    }, (error) => {
+                        console.error("Error fetching students: ", error);
+                        loadingElement.classList.add('hidden');
+                        // Show a user-friendly error message
                         showFirebaseError();
+                    });
+                } catch (error) {
+                    console.error("Failed to set up listener: ", error);
+                    loadingElement.classList.add('hidden');
+                    showFirebaseError();
+                }
+            }
+            
+            // --- Navigation Logic for Sidebar ---
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            const sections = document.querySelectorAll('.section-content');
+            const sectionTitle = document.getElementById('section-title');
+            const sectionDescription = document.getElementById('section-description');
+            const searchContainer = document.querySelector('header > div:last-child'); // Target the search/user area
+
+            // Section titles and descriptions
+            const sectionData = {
+                'jadual': { title: 'Jadual', desc: 'Urus jadual kelas dan acara' },
+                'daftar-murid': { title: 'Daftar Murid', desc: 'Daftarkan murid baharu' },
+                'kehadiran': { title: 'Kehadiran', desc: 'Rekod kehadiran pelajar' },
+                'pemarkahan': { title: 'Pemarkahan', desc: 'Masukkan dan semak markah' },
+                'senarai-murid': { title: 'Senarai Murid', desc: 'Lihat senarai murid berdaftar' },
+                'eksport': { title: 'Eksport CSV', desc: 'Eksport data murid ke fail CSV' }
+            };
+
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Remove active class from all items
+                    sidebarItems.forEach(i => i.classList.remove('active'));
+                    // Add active class to the clicked item
+                    item.classList.add('active');
+
+                    // Hide all content sections
+                    sections.forEach(s => s.classList.add('hidden'));
+
+                    // Show the selected section
+                    const sectionId = item.dataset.section;
+                    const selectedSection = document.getElementById(`${sectionId}-section`);
+                    if (selectedSection) {
+                        selectedSection.classList.remove('hidden');
+                        sectionTitle.textContent = sectionData[sectionId].title;
+                        sectionDescription.textContent = sectionData[sectionId].desc;
                     }
                 });
-            }
+            });
 
-            // --- Function to export data to CSV ---
+            // --- CSV Export Logic ---
             exportButton.addEventListener('click', () => {
-                const studentsToExport = allStudents;
-                if (studentsToExport.length === 0) {
+                // Ensure there is data to export
+                if (allStudents.length === 0) {
                     alert('Tiada data murid untuk dieksport.');
                     return;
                 }
 
-                // Get selected columns
+                // Gather selected columns
                 const columns = [];
-                if (document.getElementById('exportIdCard').checked) columns.push({ key: 'kad_pengenalan', title: 'Kad Pengenalan' });
-                if (document.getElementById('exportName').checked) columns.push({ key: 'nama', title: 'Nama Penuh' });
-                if (document.getElementById('exportGender').checked) columns.push({ key: 'jantina', title: 'Jantina' });
-                if (document.getElementById('exportYear').checked) columns.push({ key: 'tahun', title: 'Tahun' });
-                if (document.getElementById('exportClass').checked) columns.push({ key: 'kelas', title: 'Kelas' });
-                if (document.getElementById('exportTimestamp').checked) columns.push({ key: 'createdAt', title: 'Tarikh Pendaftaran' });
+                const headers = [];
+                if (document.getElementById('exportIdCard').checked) {
+                    columns.push('kad_pengenalan');
+                    headers.push('Kad Pengenalan');
+                }
+                if (document.getElementById('exportName').checked) {
+                    columns.push('nama');
+                    headers.push('Nama Penuh');
+                }
+                if (document.getElementById('exportGender').checked) {
+                    columns.push('jantina');
+                    headers.push('Jantina');
+                }
+                if (document.getElementById('exportYear').checked) {
+                    columns.push('tahun');
+                    headers.push('Tahun');
+                }
+                if (document.getElementById('exportClass').checked) {
+                    columns.push('kelas');
+                    headers.push('Kelas');
+                }
+                if (document.getElementById('exportTimestamp').checked) {
+                    columns.push('createdAt');
+                    headers.push('Tarikh Pendaftaran');
+                }
 
                 if (columns.length === 0) {
                     alert('Sila pilih sekurang-kurangnya satu medan untuk dieksport.');
                     return;
                 }
 
-                // Create CSV content
-                let csvContent = columns.map(col => `"${col.title}"`).join(',') + '\n';
-                studentsToExport.forEach(student => {
-                    const row = columns.map(col => {
-                        let value = student[col.key];
-                        if (col.key === 'createdAt' && value && value.toDate) {
+                // Create the CSV content
+                const csvRows = [];
+                csvRows.push(headers.join(',')); // Add header row
+
+                allStudents.forEach(student => {
+                    const values = columns.map(col => {
+                        let value = student[col];
+                        // Format timestamp if it's the creation date
+                        if (col === 'createdAt' && value && value.toDate) {
                             value = value.toDate().toLocaleString();
                         }
-                        return `"${value}"`;
-                    }).join(',');
-                    csvContent += row + '\n';
+                        // Handle comma in data
+                        if (typeof value === 'string' && value.includes(',')) {
+                            return `"${value}"`;
+                        }
+                        return value;
+                    });
+                    csvRows.push(values.join(','));
                 });
 
-                // Create and trigger download
+                const csvContent = csvRows.join('\n');
+                
+                // Create a Blob and a download link
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 if (link.download !== undefined) {
@@ -691,52 +762,9 @@
                     link.click();
                     document.body.removeChild(link);
                 } else {
-                    alert('Pelayar anda tidak menyokong muat turun automatik.');
+                    // Fallback for browsers that don't support the download attribute
+                    alert('Pelayar anda tidak menyokong muat turun fail secara automatik. Sila salin kandungan di bawah:\n\n' + csvContent);
                 }
-            });
-
-            // --- UI logic for switching between sections ---
-            const sidebarItems = document.querySelectorAll('.sidebar-item');
-            const sectionContents = document.querySelectorAll('.section-content');
-            const sectionTitle = document.getElementById('section-title');
-            const sectionDescription = document.getElementById('section-description');
-            
-            const sectionData = {
-                'jadual': { title: 'Jadual', description: 'Urus jadual kelas dan acara' },
-                'daftar-murid': { title: 'Daftar Murid', description: 'Daftarkan murid baharu ke dalam sistem' },
-                'senarai-murid': { title: 'Senarai Murid', description: 'Lihat dan urus semua murid berdaftar' },
-                'kehadiran': { title: 'Kehadiran', description: 'Rekod dan semak kehadiran harian' },
-                'pemarkahan': { title: 'Pemarkahan', description: 'Masukkan dan semak markah pelajar' },
-                'eksport': { title: 'Eksport CSV', description: 'Eksport data murid ke fail CSV' }
-            };
-
-            sidebarItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    const targetSectionId = item.getAttribute('data-section');
-                    if (targetSectionId === 'logout-button') return;
-
-                    // Remove active class from all sidebar items
-                    sidebarItems.forEach(i => i.classList.remove('active'));
-                    // Add active class to the clicked item
-                    item.classList.add('active');
-
-                    // Hide all content sections
-                    sectionContents.forEach(section => section.classList.add('hidden'));
-                    // Show the target section
-                    document.getElementById(`${targetSectionId}-section`).classList.remove('hidden');
-
-                    // Update the header title and description
-                    const data = sectionData[targetSectionId];
-                    if (data) {
-                        sectionTitle.textContent = data.title;
-                        sectionDescription.textContent = data.description;
-                    }
-
-                    // For the student list section, trigger a refresh to ensure it's up to date
-                    if (targetSectionId === 'senarai-murid' && auth.currentUser) {
-                        updateStudentList();
-                    }
-                });
             });
         });
     </script>
