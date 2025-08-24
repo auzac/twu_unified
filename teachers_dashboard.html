@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Papan Pemuka Pengurusan Pelajar</title>
-    <!-- Use Tailwind CSS via CDN (production version) -->
+    <!-- Use Tailwind CSS via CDN with production configuration -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Configure Tailwind for production
+        // Configure Tailwind for production to avoid warning
         tailwind.config = {
             important: true,
             corePlugins: {
@@ -76,6 +76,18 @@
             .content-area {
                 width: calc(100% - 70px);
             }
+        }
+        .firebase-error {
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .firebase-error h3 {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
         }
     </style>
 </head>
@@ -156,6 +168,21 @@
 
         <!-- Content Sections -->
         <div class="p-6">
+            <!-- Firebase Error Message (shown when permissions error occurs) -->
+            <div id="firebase-error" class="firebase-error hidden">
+                <h3><i class="fas fa-exclamation-triangle mr-2"></i> Ralat Kebenaran Firebase</h3>
+                <p>Anda tidak mempunyai kebenaran untuk mengakses data. Sila pastikan:</p>
+                <ul class="list-disc ml-5 mt-2">
+                    <li>Anda telah log masuk dengan akaun yang betul</li>
+                    <li>Firebase Firestore Rules dibenarkan untuk operasi baca/tulis</li>
+                </ul>
+                <div class="mt-4">
+                    <button id="try-again-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm">
+                        <i class="fas fa-redo mr-2"></i> Cuba Lagi
+                    </button>
+                </div>
+            </div>
+
             <!-- Jadual Section (Default) -->
             <div id="jadual-section" class="section-content">
                 <div class="bg-white rounded-lg shadow p-6">
@@ -172,15 +199,15 @@
                     <form id="registration-form" class="space-y-4">
                         <div>
                             <label for="studentName" class="block text-sm font-medium text-gray-700">Nama Penuh</label>
-                            <input type="text" id="studentName" name="studentName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <input type="text" id="studentName" name="studentName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
                         </div>
                         <div>
                             <label for="studentIdCard" class="block text-sm font-medium text-gray-700">Kad Pengenalan</label>
-                            <input type="text" id="studentIdCard" name="studentIdCard" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <input type="text" id="studentIdCard" name="studentIdCard" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
                         </div>
                         <div>
                             <label for="studentGender" class="block text-sm font-medium text-gray-700">Jantina</label>
-                            <select id="studentGender" name="studentGender" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <select id="studentGender" name="studentGender" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
                                 <option value="">Pilih Jantina</option>
                                 <option value="Lelaki">Lelaki</option>
                                 <option value="Perempuan">Perempuan</option>
@@ -189,7 +216,7 @@
                         <!-- Dropdown for student year -->
                         <div>
                             <label for="studentYear" class="block text-sm font-medium text-gray-700">Tahun</label>
-                            <select id="studentYear" name="studentYear" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <select id="studentYear" name="studentYear" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
                                 <option value="">Pilih Tahun</option>
                                 <!-- Years will be populated by JavaScript -->
                             </select>
@@ -197,7 +224,7 @@
                         <!-- Dropdown for student class -->
                         <div>
                             <label for="studentClass" class="block text-sm font-medium text-gray-700">Kelas</label>
-                            <select id="studentClass" name="studentClass" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <select id="studentClass" name="studentClass" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
                                 <option value="">Pilih Kelas</option>
                                 <!-- Classes will be populated by JavaScript -->
                             </select>
@@ -221,14 +248,14 @@
                     <div class="flex flex-col md:flex-row gap-4 mb-4">
                         <div class="flex-1">
                             <label for="yearFilter" class="block text-sm font-medium text-gray-700">Tapis Mengikut Tahun:</label>
-                            <select id="yearFilter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <select id="yearFilter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
                                 <option value="">Semua Tahun</option>
                                 <!-- Years will be populated by JavaScript -->
                             </select>
                         </div>
                         <div class="flex-1">
                             <label for="classFilter" class="block text-sm font-medium text-gray-700">Tapis Mengikut Kelas:</label>
-                            <select id="classFilter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <select id="classFilter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
                                 <option value="">Semua Kelas</option>
                                 <!-- Classes will be populated by JavaScript -->
                             </select>
@@ -354,6 +381,26 @@
             const loadingStudentsElement = document.getElementById('loading-students');
             const yearFilterElement = document.getElementById('yearFilter');
             const classFilterElement = document.getElementById('classFilter');
+            const firebaseErrorElement = document.getElementById('firebase-error');
+            const tryAgainButton = document.getElementById('try-again-btn');
+
+            // Function to show Firebase error
+            function showFirebaseError() {
+                firebaseErrorElement.classList.remove('hidden');
+            }
+
+            // Function to hide Firebase error
+            function hideFirebaseError() {
+                firebaseErrorElement.classList.add('hidden');
+            }
+
+            // Try again button handler
+            tryAgainButton.addEventListener('click', function() {
+                hideFirebaseError();
+                if (auth.currentUser) {
+                    setupStudentListListener(db, auth.currentUser.uid, studentListElement, loadingStudentsElement, yearFilterElement.value, classFilterElement.value);
+                }
+            });
 
             // --- Function to populate a select element with an array of options ---
             function populateDropdown(selectElement, options, allText = 'Pilih') {
@@ -432,7 +479,8 @@
                         jantina: studentGender,
                         tahun: studentYear,
                         kelas: studentClass,
-                        kad_pengenalan: studentIdCard
+                        kad_pengenalan: studentIdCard,
+                        createdAt: new Date()
                     };
 
                     try {
@@ -456,6 +504,11 @@
                         statusMessage.textContent = "Ralat semasa mendaftarkan murid. Sila cuba lagi.";
                         statusMessage.className = 'mt-4 p-4 text-sm rounded-lg bg-red-100 text-red-700';
                         statusMessage.classList.remove('hidden');
+                        
+                        // Show Firebase error if it's a permissions issue
+                        if (error.code === 'permission-denied') {
+                            showFirebaseError();
+                        }
                     }
                 });
             }
@@ -535,10 +588,16 @@
                     }
                     
                     loadingElement.classList.add('hidden');
+                    hideFirebaseError();
                 }, (error) => {
                     console.error("Error fetching students: ", error);
                     listElement.innerHTML = `<p class="text-red-500 text-center">Gagal memuatkan data murid.</p>`;
                     loadingElement.classList.add('hidden');
+                    
+                    // Show Firebase error if it's a permissions issue
+                    if (error.code === 'permission-denied') {
+                        showFirebaseError();
+                    }
                 });
             }
 
